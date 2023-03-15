@@ -45,7 +45,6 @@ def main(message):
     txt=f'Привет { message.from_user.first_name},  вот список команд которые тебе доступны:'
     img = open(f'{com_res_path[2]}Photo.png', 'rb')
     bot.send_photo(message.chat.id, img, caption=txt ,reply_markup=reply_markup)
-    # bot.send_message(chat_id=message.chat.id, text=f'Привет { message.from_user.first_name},  вот список команд которые тебе доступны:', reply_markup=reply_markup )
 
 # content_type= text, audio, document, photo, sticker, video, video_note,
 #  voice, location, contact, new_chat_members, left_chat_member, new_chat_title,
