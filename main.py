@@ -43,7 +43,7 @@ def main(message):
     build_smenu()
     reply_markup = types.InlineKeyboardMarkup(build_menu(button_list, n_cols=2),row_width=1)
     txt=f'Привет { message.from_user.first_name},  вот список команд которые тебе доступны:'
-    img = open(f'{com_res_path[2]}Photo.png', 'rb')
+    img = open(f'{com_res_path[2]}M4.png', 'rb')
     bot.send_photo(message.chat.id, img, caption=txt ,reply_markup=reply_markup)
 
 # content_type= text, audio, document, photo, sticker, video, video_note,
