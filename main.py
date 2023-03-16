@@ -22,6 +22,9 @@ com_res_path = ['Comon/Res/Audio/', 'Comon/Res/Docs/', 'Comon/Res/Pix/', 'Comon/
 com_tmp_path = ['Comon/temp/Audio/', 'Comon/temp/Docs/', 'Comon/temp/Pix/', 'Comon/temp/Video/']
 usr_root_path ='Users/'
 usr_part_path = ['/Audio/','/Docs/','/Pix/','/Video/']
+say_hwy_list  = ['как ты', 'как сам', 'как дела ', 'как жизнь', 'как твои дела','как поживаешь', 'как ты поживаешь', 'все норм', 'все хорошо']
+say_hi_list =   ['привет', 'здравствуй', 'здравствуйте', 'доброго дня', 'день добрый', 'здорова', 'здоров', 'утро доброе', 'доброе утро', 'добрый вечер', 'добрый день', 'приветствую']
+say_nst_list =  ['как настроение', 'как твое настроение', 'как настрой', 'что с настроением', 'настроение как', 'что с настроем' ]
 
 def build_menu(buttons, n_cols,  header_buttons=None, footer_buttons=None):
     menu = [buttons[i:i + n_cols] for i in range(0, len(buttons), n_cols)]
@@ -37,6 +40,7 @@ def rand_ansv(mas_ansv):
 
 def build_smenu():
     bot.set_my_commands(mas_bmenu)
+
 
 @bot.message_handler(commands=['start'])
 def main(message):
@@ -108,16 +112,22 @@ def url(message):
 @bot.message_handler()
 def info(message):
     mess = message.text.lower() 
-    if mess.startswith("как ты"):
-        bot.send_message(message.chat.id, rand_ansv(mas_del))
-    elif mess.startswith("привет"):
-        bot.send_message(message.chat.id, rand_ansv(mas_hello))
-    elif mess.startswith("как дела"):
-        bot.send_message(message.chat.id, rand_ansv(mas_del))
-    elif mess.startswith("как настроение"):
-        bot.send_message(message.chat.id, rand_ansv(mas_nastr))
-    else:
-        bot.reply_to(message, rand_ansv(mas_noUnd))
+    for i in say_hwy_list:
+        if mess.startswith(i):
+            bot.send_message(message.chat.id, rand_ansv(mas_del))
+            return
+    for i in say_hi_list:
+        if mess.startswith(i):
+            bot.send_message(message.chat.id, rand_ansv(mas_hello))
+            return
+    for i in say_nst_list:
+        if mess.startswith(i):
+            bot.send_message(message.chat.id, rand_ansv(mas_nastr))
+            return
+        else:
+            bot.reply_to(message, rand_ansv(mas_noUnd))
+            return
+
        
 @bot.callback_query_handler(func=lambda call: True)
 def commandshandlebtn(call):
