@@ -37,10 +37,11 @@ def build_menu(buttons, n_cols,  header_buttons=None, footer_buttons=None):
 
 def list_dir (dir, ext='.txt'):
     content = os.listdir(dir)
-    images = []
+    f_list = []
     for file in content:
         if os.path.isfile(os.path.join(dir, file)) and file.endswith(ext):
-            images.append(file)
+            f_list.append(file)
+    return  f_list     
 
 def rand_ansv(mas_ansv):
     return random.choice(mas_ansv)
@@ -53,9 +54,9 @@ def build_smenu():
 def main(message):
     build_smenu()
     reply_markup = types.InlineKeyboardMarkup(build_menu(button_list, n_cols=2),row_width=1)
-    txt=f'Привет { message.from_user.first_name},  вот список команд которые тебе доступны:'
+    txt=f'Привет { message.from_user.first_name},\r\nвот список команд \r\nкоторые тебе доступны:'
     img = open(f'{com_res_path[2]}M4.png', 'rb')
-    bot.send_photo(message.chat.id, img, caption=txt ,reply_markup=reply_markup)
+    bot.send_photo(message.chat.id, img, caption=txt ,reply_markup=reply_markup, parse_mode='HTML' )
 
 # content_type= text, audio, document, photo, sticker, video, video_note,
 #  voice, location, contact, new_chat_members, left_chat_member, new_chat_title,
