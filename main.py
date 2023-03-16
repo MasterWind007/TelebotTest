@@ -3,6 +3,7 @@ import telebot as tb
 from telebot import types
 import random
 from io import BytesIO
+import os
 
 bot = tb.TeleBot('6140511617:AAG5Nk3kfedflop46XBKrKWQJFUcH9li7Yo')
 mas_hello =   ['Привет.', 'День добрый!', 'Добрый день!', 'Здравствуй!', 'Доброго дня!']
@@ -34,6 +35,12 @@ def build_menu(buttons, n_cols,  header_buttons=None, footer_buttons=None):
         menu.append([footer_buttons])
     return menu
 
+def list_dir (dir, ext='.txt'):
+    content = os.listdir(dir)
+    images = []
+    for file in content:
+        if os.path.isfile(os.path.join(dir, file)) and file.endswith(ext):
+            images.append(file)
 
 def rand_ansv(mas_ansv):
     return random.choice(mas_ansv)
