@@ -23,11 +23,11 @@ com_res_path = ['Comon/Res/Audio/', 'Comon/Res/Docs/', 'Comon/Res/Pix/', 'Comon/
 com_tmp_path = ['Comon/temp/Audio/', 'Comon/temp/Docs/', 'Comon/temp/Pix/', 'Comon/temp/Video/']
 usr_root_path ='Users/'
 usr_part_path = ['/Audio/','/Docs/','/Pix/','/Video/']
-say_hwy_list  = ['как ты', 'как сам', 'как дела ', 'как жизнь', 'как твои дела','как поживаешь', 'как ты поживаешь', 'все норм', 'все хорошо']
+say_hwy_list  = ['как ты', 'как сам', 'как дела', 'как жизнь', 'как твои дела','как поживаешь', 'как ты поживаешь', 'все норм', 'все хорошо']
 say_hi_list =   ['привет', 'здравствуй', 'здравствуйте', 'доброго дня', 'день добрый', 'здорова', 'здоров', 'утро доброе', 'доброе утро', 'добрый вечер', 'добрый день', 'приветствую']
 say_nst_list =  ['как настроение', 'как твое настроение', 'как настрой', 'что с настроением', 'настроение как', 'что с настроем' ]
 
-def build_menu(buttons, n_cols,  header_buttons=None, footer_buttons=None):
+def build_menu(buttons, n_cols,  header_buttons=None, footer_buttons=None): #сборка инлайн клавиатуры 
     menu = [buttons[i:i + n_cols] for i in range(0, len(buttons), n_cols)]
     if header_buttons:
         menu.insert(0, [header_buttons])
@@ -35,7 +35,7 @@ def build_menu(buttons, n_cols,  header_buttons=None, footer_buttons=None):
         menu.append([footer_buttons])
     return menu
 
-def list_dir (dir, ext='.txt'):
+def list_dir (dir, ext='.txt'): # получает список файлов с указанным расширением из указаной папки 
     content = os.listdir(dir)
     f_list = []
     for file in content:
@@ -43,14 +43,14 @@ def list_dir (dir, ext='.txt'):
             f_list.append(file)
     return  f_list     
 
-def rand_ansv(mas_ansv):
+def rand_ansv(mas_ansv): # выдает рандомный вариант ответа из возможных
     return random.choice(mas_ansv)
 
-def build_smenu():
+def build_smenu(): #показывает меню
     bot.set_my_commands(mas_bmenu)
 
 
-@bot.message_handler(commands=['start'])
+@bot.message_handler(commands=['start']) #Стартовое меню
 def main(message):
     build_smenu()
     reply_markup = types.InlineKeyboardMarkup(build_menu(button_list, n_cols=2),row_width=1)
@@ -64,7 +64,7 @@ def main(message):
 #  channel_chat_created, migrate_to_chat_id, migrate_from_chat_id, pinned_message,
 #  web_app_data.
 
-@bot.message_handler(content_types=['photo', 'document', 'audio', 'video'])
+@bot.message_handler(content_types=['photo', 'document', 'audio', 'video']) #обработчик получаемого контента
 def handler_file(message):
     from pathlib import Path
     if message.content_type == 'photo':
@@ -82,42 +82,45 @@ def handler_file(message):
         with open(src, 'wb') as new_file:
             new_file.write(downloaded_file)
 
-@bot.message_handler(commands=['getpix'])
+@bot.message_handler(commands=['getpix']) #Отправка фото 
 def send_pix(message):
     with open('Photo.PNG', 'rb') as img:
         bot.send_photo(message.chat.id, img)
     
 
-@bot.message_handler(commands=['menu'])
+@bot.message_handler(commands=['menu']) #Отправка меню
 def send_menu(message):
     build_smenu()
     reply_markup = types.InlineKeyboardMarkup(build_menu(button_list, n_cols=2),row_width=1)
-    bot.send_message(chat_id=message.chat.id, text='Список команд:', reply_markup=reply_markup)
+    bot.send_message(chat_id=message.chat.id, text='Список доступных команд:', reply_markup=reply_markup)
 
 
-@bot.message_handler(commands=['getfile'])
+@bot.message_handler(commands=['getfile']) #пример отправки файла
 def sendfile(message):
     with open('1.txt', 'rb') as tmp:
         obj = BytesIO(tmp.read())
         obj.name = '1.txt'
         bot.send_document(message.from_user.id, document=obj, caption=rand_ansv(mas_sendf))
 
-@bot.message_handler(commands = ['swchat'])
+@bot.message_handler(commands = ['swchat']) #пример перенаравления в чат
 def swchat(message):
     markup = types.InlineKeyboardMarkup()
     switch_button = types.InlineKeyboardButton(text='Жми сюда!', switch_inline_query="Telegram")
     markup.add(switch_button)
     bot.send_message(message.chat.id, "Перейти в наш чат", reply_markup = markup)
 
-@bot.message_handler(commands = ['url'])
+@bot.message_handler(commands = ['url']) #Выдача ссылки
 def url(message):
-    markup = types.InlineKeyboardMarkup()
-    btn_my_site= types.InlineKeyboardButton(text='Наш сайт', url='https://ya.ru')
-    markup.add(btn_my_site)
-    bot.send_message(message.chat.id, "Нажми на кнопку и перейди на наш сайт.", reply_markup = markup)    
+    # markup = types.InlineKeyboardMarkup()
+    # btn_my_site= types.InlineKeyboardButton(text='Наш сайт', url='https://ya.ru')
+    # markup.add(btn_my_site)
+    txt = "Вот необходимые вам ссылки:\b\n\
+ <a href='https://yndex.ru/'>Яндекс</a>\b\n\
+ <a href='https://coogle.com/'>Google</a>"
+    bot.send_message(message.chat.id, text=txt, parse_mode="HTML")#, reply_markup = markup)    
 
 
-@bot.message_handler()
+@bot.message_handler() # Анализ и обработака текстовых сообщений
 def info(message):
     mess = message.text.lower() 
     for i in say_hwy_list:
@@ -137,7 +140,7 @@ def info(message):
             return
 
        
-@bot.callback_query_handler(func=lambda call: True)
+@bot.callback_query_handler(func=lambda call: True) #обработчик команд 
 def commandshandlebtn(call):
     mess = call.data
     message = call.message
