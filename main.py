@@ -5,6 +5,20 @@ import random
 from io import BytesIO
 import os
 
+class CommandArgs:
+    def __init__(self, cd='', cmd=''):
+        self.call_data = cd
+        self.comm_data = cmd
+    
+    def is_exist(self,cd='', cmd=''): #  есть ли в данных такая команда
+        self.call_data = cd
+        self.comm_data = cmd+' '
+        return self.call_data.startswith(cmd)#, 
+    
+    def arg_name(self): 
+        tab = len(self.comm_data)
+        return self.call_data[tab:]
+
 bot = tb.TeleBot('6140511617:AAG5Nk3kfedflop46XBKrKWQJFUcH9li7Yo')
 mas_hello =   ['Привет.', 'День добрый!', 'Добрый день!', 'Здравствуй!', 'Доброго дня!']
 mas_del =     ['Заебок','Норм', 'Пойдет', 'Хорошо', 'Отлично', 'Лучше не бывает!', 'Лучше всех!', 'Как обычно']
@@ -27,7 +41,7 @@ say_hwy_list  = ['как ты', 'как сам', 'как дела', 'как жи
 say_hi_list =   ['привет', 'здравствуй', 'здравствуйте', 'доброго дня', 'день добрый', 'здорова', 'здоров', 'утро доброе', 'доброе утро', 'добрый вечер', 'добрый день', 'приветствую']
 say_nst_list =  ['как настроение', 'как твое настроение', 'как настрой', 'что с настроением', 'настроение как', 'что с настроем' ]
 
-curr_usr_msg = []
+
 
 def build_menu(buttons, n_cols,  header_buttons=None, footer_buttons=None): #сборка инлайн клавиатуры 
     menu = [buttons[i:i + n_cols] for i in range(0, len(buttons), n_cols)]
@@ -48,19 +62,21 @@ def list_dir (dir, ext='.txt'): # получает список файлов с 
 def rand_ansv(mas_ansv): # выдает рандомный вариант ответа из возможных
     return random.choice(mas_ansv)
 
-def build_smenu(): #показывает меню
+def build_smenu(): #создает текстовое меню.
     bot.set_my_commands(mas_bmenu)
 
-def get_arg(call_data, cmd): # получить аргумент команды
-     cmd +=' ' 
-     tab = len(cmd)
-     return [call_data.startswith(cmd), call_data[tab:]]
 
 def sendpix(message, fname): # отправить картинку в чат
     pix_path = f'Users/{message.chat.first_name}_{message.chat.last_name}/Pix/'
     pix_path+=fname
     with open(pix_path, 'rb') as img:
         bot.send_photo(message.chat.id, img)
+
+def sendfile(message): # отправить файл в чат
+    with open('1.txt', 'rb') as tmp:
+        obj = BytesIO(tmp.read())
+        obj.name = '1.txt'
+        bot.send_document(message.from_user.id, document=obj, caption=rand_ansv(mas_sendf))
 
 @bot.message_handler(commands=['start']) #Стартовое меню
 def main(message):
@@ -109,21 +125,14 @@ def my_pixlist(message):
     # pix_content+= '</b>'    
     bot.send_message(chat_id=message.chat.id, text='Список картинок, как вы просили:\b\n'
                      , parse_mode='HTML',reply_markup=reply_markup)
-    
+
+
 
 @bot.message_handler(commands=['menu']) #Отправка меню
 def send_menu(message):
     build_smenu()
     reply_markup = types.InlineKeyboardMarkup(build_menu(button_list, n_cols=2),row_width=1)
     bot.send_message(chat_id=message.chat.id, text='Список доступных команд:', reply_markup=reply_markup)
-
-
-@bot.message_handler(commands=['getfile']) #пример отправки файла
-def sendfile(message):
-    with open('1.txt', 'rb') as tmp:
-        obj = BytesIO(tmp.read())
-        obj.name = '1.txt'
-        bot.send_document(message.from_user.id, document=obj, caption=rand_ansv(mas_sendf))
 
 @bot.message_handler(commands = ['swchat']) #пример перенаравления в чат
 def swchat(message):
@@ -167,8 +176,9 @@ def info(message):
 def commandshandlebtn(call):
     mess = call.data
     message = call.message
+    c_arg = CommandArgs() # определили объект получающий аргументы из строки команд чата 
     if   mess == "mypixlist": my_pixlist(message)
-    elif get_arg(mess, "getpix")[0]: sendpix(message, get_arg(mess, "getpix")[1])
+    elif c_arg.is_exist(mess, "getpix"): sendpix(message,c_arg.arg_name())
     elif mess == 'getdoc': sendfile(message)
     elif mess == 'menu': send_menu(message)
     # bot.answer_callback_query(call.id, show_alert=True, text="вызвано меню")
