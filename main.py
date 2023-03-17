@@ -54,7 +54,7 @@ def build_smenu(): #показывает меню
 def main(message):
     build_smenu()
     reply_markup = types.InlineKeyboardMarkup(build_menu(button_list, n_cols=2),row_width=1)
-    txt=f'Привет { message.from_user.first_name},\r\nвот список команд \r\nкоторые тебе доступны:'
+    txt=f'Привет { message.from_user.first_name},\r\nздесь список команд \r\nкоторые тебе доступны:'
     img = open(f'{com_res_path[2]}M4.png', 'rb')
     bot.send_photo(message.chat.id, img, caption=txt ,reply_markup=reply_markup, parse_mode='HTML' )
 
