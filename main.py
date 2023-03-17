@@ -74,8 +74,9 @@ def my_pixlist(message):#Отправка списка фото пользова
     # for file_nm in pix_list:
     #     pix_content += file_nm+'\n'
     # pix_content+= '</b>'    
-    bot.send_message(chat_id=message.chat.id, text='Список картинок, как ты просил:\n'
-                     , parse_mode='HTML',reply_markup=reply_markup)
+    txt='Список твоих картинок, как ты просил:'
+    with open(f'{com_res_path[2]}M1.png', 'rb') as img:
+        bot.send_photo(message.chat.id, img, caption=txt ,reply_markup=reply_markup, parse_mode='HTML' )
     
 def my_doclist(message): # Отправка списка документов пользователя
     path = f'Users/{message.chat.first_name}_{message.chat.last_name}/Docs'
@@ -84,8 +85,9 @@ def my_doclist(message): # Отправка списка документов п
     for file_nm in list:
         btn_list.append(types.InlineKeyboardButton(file_nm, callback_data='getdoc '+file_nm))
     reply_markup = types.InlineKeyboardMarkup(build_menu(btn_list, n_cols=1),row_width=1)
-    bot.send_message(chat_id=message.chat.id, text='Список документов, как ты просил:\n'
-                     , parse_mode='HTML',reply_markup=reply_markup)
+    txt='Список документов, как ты просил:'
+    with open(f'{com_res_path[2]}M1.png', 'rb') as img:
+        bot.send_photo(message.chat.id, img, caption=txt ,reply_markup=reply_markup, parse_mode='HTML' )
 
 def sendpix(message, fname): # отправить картинку в чат
     path = f'Users/{message.chat.first_name}_{message.chat.last_name}/Pix/'
@@ -106,8 +108,8 @@ def main(message):
     build_smenu()
     reply_markup = types.InlineKeyboardMarkup(build_menu(button_list, n_cols=2),row_width=1)
     txt=f'Привет { message.from_user.first_name}!\r\n\r\nЗдесь список команд \r\nкоторые тебе доступны:'
-    img = open(f'{com_res_path[2]}M4.png', 'rb')
-    bot.send_photo(message.chat.id, img, caption=txt ,reply_markup=reply_markup, parse_mode='HTML' )
+    with open(f'{com_res_path[2]}M4.png', 'rb') as img:
+        bot.send_photo(message.chat.id, img, caption=txt ,reply_markup=reply_markup, parse_mode='HTML' )
 
 # content_type= text, audio, document, photo, sticker, video, video_note,
 #  voice, location, contact, new_chat_members, left_chat_member, new_chat_title,
@@ -153,8 +155,8 @@ def url(message):
     # markup = types.InlineKeyboardMarkup()
     # btn_my_site= types.InlineKeyboardButton(text='Наш сайт', url='https://ya.ru')
     # markup.add(btn_my_site)
-    txt = "Вот необходимые вам ссылки:\b\n\
- <a href='https://yndex.ru/'>Яндекс</a>\b\n\
+    txt = "Вот необходимые вам ссылки:\n\
+ <a href='https://yndex.ru/'>Яндекс</a>\n\
  <a href='https://coogle.com/'>Google</a>"
     bot.send_message(message.chat.id, text=txt, parse_mode="HTML")#, reply_markup = markup)    
 
