@@ -1,4 +1,4 @@
-import argparse
+#import argparse
 import telebot as tb
 from telebot import types
 import random
@@ -15,10 +15,10 @@ mas_sendf =   ['Лови.', 'Получи распишись.', 'Готово.',
 mas_No =      ['Так не получится.' ,'Это так не работает.' ,'Нет!' ,'Не выйдет!' ,'Не в этот раз.' ,'Не сейчас.' ,'Я это делать не буду!', 'Я не стану этого делать!']
 mas_bmenu =   [types.BotCommand("start", "Запуск Бота"), types.BotCommand("menu", "Вызов меню")]
 button_list = [types.InlineKeyboardButton("Вызов меню 📖", callback_data='menu'),
-               types.InlineKeyboardButton("Получить файл 📄", callback_data='getdoc'),
-               types.InlineKeyboardButton(text='Чат 🪠', switch_inline_query="Telegram"),
+               types.InlineKeyboardButton("Мои документы 📄", callback_data='getdoc'),
+               types.InlineKeyboardButton(text='Перейти в чат 🪠', switch_inline_query="Telegram"),
                types.InlineKeyboardButton(text='Наш сайт 🧻', web_app=types.WebAppInfo('https://ya.ru')),
-               types.InlineKeyboardButton("Получить картинку 🏞", callback_data='getpix')]
+               types.InlineKeyboardButton("Мои картинки 🏞", callback_data='getpix')]
 com_res_path = ['Comon/Res/Audio/', 'Comon/Res/Docs/', 'Comon/Res/Pix/', 'Comon/Res/Video/']
 com_tmp_path = ['Comon/temp/Audio/', 'Comon/temp/Docs/', 'Comon/temp/Pix/', 'Comon/temp/Video/']
 usr_root_path ='Users/'
@@ -54,7 +54,7 @@ def build_smenu(): #показывает меню
 def main(message):
     build_smenu()
     reply_markup = types.InlineKeyboardMarkup(build_menu(button_list, n_cols=2),row_width=1)
-    txt=f'Привет { message.from_user.first_name},\r\nздесь список команд \r\nкоторые тебе доступны:'
+    txt=f'Привет { message.from_user.first_name}!\r\n\r\nЗдесь список команд \r\nкоторые тебе доступны:'
     img = open(f'{com_res_path[2]}M4.png', 'rb')
     bot.send_photo(message.chat.id, img, caption=txt ,reply_markup=reply_markup, parse_mode='HTML' )
 
