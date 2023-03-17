@@ -51,6 +51,16 @@ def rand_ansv(mas_ansv): # выдает рандомный вариант отв
 def build_smenu(): #показывает меню
     bot.set_my_commands(mas_bmenu)
 
+def get_arg(call_data, cmd): # получить аргумент команды
+     cmd +=' ' 
+     tab = len(cmd)
+     return [call_data.startswith(cmd), call_data[tab:]]
+
+def sendpix(message, fname): # отправить картинку в чат
+    pix_path = f'Users/{message.chat.first_name}_{message.chat.last_name}/Pix/'
+    pix_path+=fname
+    with open(pix_path, 'rb') as img:
+        bot.send_photo(message.chat.id, img)
 
 @bot.message_handler(commands=['start']) #Стартовое меню
 def main(message):
@@ -98,18 +108,6 @@ def my_pixlist(message):
     #     pix_content += file_nm+'\b\n'
     # pix_content+= '</b>'    
     bot.send_message(chat_id=message.chat.id, text='Список картинок, как вы просили:\b\n', parse_mode='HTML',reply_markup=reply_markup)
-
-
-def get_arg(call_data, cmd): # получить аргумент команды
-     cmd +=' ' 
-     tab = len(cmd)
-     return [call_data.startswith(cmd), call_data[tab:]]
-
-def sendpix(message, fname):
-    pix_path = f'Users/{message.chat.first_name}_{message.chat.last_name}/Pix/'
-    pix_path+=fname
-    with open(pix_path, 'rb') as img:
-        bot.send_photo(message.chat.id, img)
     
 
 @bot.message_handler(commands=['menu']) #Отправка меню
