@@ -107,7 +107,8 @@ def my_pixlist(message):
     # for file_nm in pix_list:
     #     pix_content += file_nm+'\b\n'
     # pix_content+= '</b>'    
-    bot.send_message(chat_id=message.chat.id, text='Список картинок, как вы просили:\b\n', parse_mode='HTML',reply_markup=reply_markup)
+    bot.send_message(chat_id=message.chat.id, text='Список картинок, как вы просили:\b\n'
+                     , parse_mode='HTML',reply_markup=reply_markup)
     
 
 @bot.message_handler(commands=['menu']) #Отправка меню
