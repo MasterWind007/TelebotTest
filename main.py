@@ -18,7 +18,7 @@ button_list = [types.InlineKeyboardButton("Вызов меню 📖", callback_d
                types.InlineKeyboardButton("Мои документы 📄", callback_data='getdoc'),
                types.InlineKeyboardButton(text='Перейти в чат 🪠', switch_inline_query="Telegram"),
                types.InlineKeyboardButton(text='Наш сайт 🧻', web_app=types.WebAppInfo('https://ya.ru')),
-               types.InlineKeyboardButton("Мои картинки 🏞", callback_data='getpix')]
+               types.InlineKeyboardButton("Мои картинки 🏞", callback_data='mypixlist')]
 com_res_path = ['Comon/Res/Audio/', 'Comon/Res/Docs/', 'Comon/Res/Pix/', 'Comon/Res/Video/']
 com_tmp_path = ['Comon/temp/Audio/', 'Comon/temp/Docs/', 'Comon/temp/Pix/', 'Comon/temp/Video/']
 usr_root_path ='Users/'
@@ -26,6 +26,8 @@ usr_part_path = ['/Audio/','/Docs/','/Pix/','/Video/']
 say_hwy_list  = ['как ты', 'как сам', 'как дела', 'как жизнь', 'как твои дела','как поживаешь', 'как ты поживаешь', 'все норм', 'все хорошо']
 say_hi_list =   ['привет', 'здравствуй', 'здравствуйте', 'доброго дня', 'день добрый', 'здорова', 'здоров', 'утро доброе', 'доброе утро', 'добрый вечер', 'добрый день', 'приветствую']
 say_nst_list =  ['как настроение', 'как твое настроение', 'как настрой', 'что с настроением', 'настроение как', 'что с настроем' ]
+
+curr_usr_msg = []
 
 def build_menu(buttons, n_cols,  header_buttons=None, footer_buttons=None): #сборка инлайн клавиатуры 
     menu = [buttons[i:i + n_cols] for i in range(0, len(buttons), n_cols)]
@@ -66,6 +68,7 @@ def main(message):
 
 @bot.message_handler(content_types=['photo', 'document', 'audio', 'video']) #обработчик получаемого контента
 def handler_file(message):
+    curr_usr_msg = message 
     from pathlib import Path
     if message.content_type == 'photo':
         Path(f'Users/{message.from_user.first_name}_{message.from_user.last_name}/Pix/').mkdir(parents=True, exist_ok=True)
@@ -82,9 +85,30 @@ def handler_file(message):
         with open(src, 'wb') as new_file:
             new_file.write(downloaded_file)
 
-@bot.message_handler(commands=['getpix']) #Отправка фото 
-def send_pix(message):
-    with open('Photo.PNG', 'rb') as img:
+@bot.message_handler(commands=['mypixlist']) #Отправка списка фото пользователя
+def my_pixlist(message):
+    pix_path = f'Users/{message.chat.first_name}_{message.chat.last_name}/Pix'
+    pix_list = list_dir(pix_path,'.jpg')
+    btn_list = []
+    for file_nm in pix_list:
+        btn_list.append(types.InlineKeyboardButton(file_nm, callback_data='getpix '+file_nm))
+    reply_markup = types.InlineKeyboardMarkup(build_menu(btn_list, n_cols=1),row_width=1)
+    # pix_content = 'Список ваших сохраненных картинок:\b\n<b>'
+    # for file_nm in pix_list:
+    #     pix_content += file_nm+'\b\n'
+    # pix_content+= '</b>'    
+    bot.send_message(chat_id=message.chat.id, text='Список картинок, как вы просили:\b\n', parse_mode='HTML',reply_markup=reply_markup)
+
+
+def get_arg(call_data, cmd): # получить аргумент команды
+     cmd +=' ' 
+     tab = len(cmd)
+     return [call_data.startswith(cmd), call_data[tab:]]
+
+def sendpix(message, fname):
+    pix_path = f'Users/{message.chat.first_name}_{message.chat.last_name}/Pix/'
+    pix_path+=fname
+    with open(pix_path, 'rb') as img:
         bot.send_photo(message.chat.id, img)
     
 
@@ -144,10 +168,11 @@ def info(message):
 def commandshandlebtn(call):
     mess = call.data
     message = call.message
-    if   mess == "getpix": send_pix(message)
+    if   mess == "mypixlist": my_pixlist(message)
+    elif get_arg(mess, "getpix")[0]: sendpix(message, get_arg(mess, "getpix")[1])
     elif mess == 'getdoc': sendfile(message)
     elif mess == 'menu': send_menu(message)
-        # bot.answer_callback_query(call.id, show_alert=True, text="вызвано меню")
+    # bot.answer_callback_query(call.id, show_alert=True, text="вызвано меню")
 
 
 if __name__ == '__main__':
