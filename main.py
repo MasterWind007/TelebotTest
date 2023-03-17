@@ -68,17 +68,17 @@ def main(message):
 def handler_file(message):
     from pathlib import Path
     if message.content_type == 'photo':
-        Path(f'Users/Pix/{message.from_user.first_name}_{message.from_user.last_name}/').mkdir(parents=True, exist_ok=True)
+        Path(f'Users/{message.from_user.first_name}_{message.from_user.last_name}/Pix/').mkdir(parents=True, exist_ok=True)
         file_info = bot.get_file(message.photo[len(message.photo) - 1].file_id)
         downloaded_file = bot.download_file(file_info.file_path)
-        src = f'Users/{message.from_user.first_name}_{message.from_user.last_name}/{message.chat.id}_' + file_info.file_path.replace('photos/', '')
+        src = f'Users/{message.from_user.first_name}_{message.from_user.last_name}/Pix/{message.chat.id}_' + file_info.file_path.replace('photos/', '')
         with open(src, 'wb') as new_file:
             new_file.write(downloaded_file)
     elif message.content_type == 'document':
-        Path(f'Users/Docs/{message.from_user.first_name}_{message.from_user.last_name}/').mkdir(parents=True, exist_ok=True)
+        Path(f'Users/{message.from_user.first_name}_{message.from_user.last_name}/Docs/').mkdir(parents=True, exist_ok=True)
         file_info = bot.get_file(message.document.file_id)
         downloaded_file = bot.download_file(file_info.file_path)
-        src = f'Users/{message.from_user.first_name}_{message.from_user.last_name}/{message.chat.id}_' + message.document.file_name
+        src = f'Users/{message.from_user.first_name}_{message.from_user.last_name}/Docs/{message.chat.id}_' + message.document.file_name
         with open(src, 'wb') as new_file:
             new_file.write(downloaded_file)
 
