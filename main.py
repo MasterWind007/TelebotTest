@@ -19,6 +19,7 @@ class CommandArgs:
         tab = len(self.comm_data)
         return self.call_data[tab:]
 
+
 bot = tb.TeleBot('6140511617:AAG5Nk3kfedflop46XBKrKWQJFUcH9li7Yo')
 mas_hello =   ['Привет.', 'День добрый!', 'Добрый день!', 'Здравствуй!', 'Доброго дня!']
 mas_del =     ['Заебок','Норм', 'Пойдет', 'Хорошо', 'Отлично', 'Лучше не бывает!', 'Лучше всех!', 'Как обычно']
@@ -40,6 +41,27 @@ usr_part_path = ['/Audio/','/Docs/','/Pix/','/Video/']
 say_hwy_list  = ['как ты', 'как сам', 'как дела', 'как жизнь', 'как твои дела','как поживаешь', 'как ты поживаешь', 'все норм', 'все хорошо']
 say_hi_list =   ['привет', 'здравствуй', 'здравствуйте', 'доброго дня', 'день добрый', 'здорова', 'здоров', 'утро доброе', 'доброе утро', 'добрый вечер', 'добрый день', 'приветствую']
 say_nst_list =  ['как настроение', 'как твое настроение', 'как настрой', 'что с настроением', 'настроение как', 'что с настроем' ]
+
+AUTH = False #Статус авторизации пользователя
+
+
+def autorization(message):
+    if message.text == 'Вход в систему':
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        exit = types.KeyboardButton('Выход')
+        markup.add(exit)
+        sent = bot.send_message(message.chat.id, 'Введите ключ для входа в систему',  reply_markup=markup)
+        bot.register_next_step_handler(sent, login)
+
+def login(message):
+        if message.text == 'Pass':
+            AUTH = True
+            bot.send_message(message.chat.id, 'Вход успешен')
+        else:
+            AUTH = False
+            bot.send_message(message.chat.id, 'Пароль неверен')        
+
+
 
 def build_menu(buttons, n_cols,  header_buttons=None, footer_buttons=None): #сборка инлайн клавиатуры 
     menu = [buttons[i:i + n_cols] for i in range(0, len(buttons), n_cols)]
@@ -181,7 +203,7 @@ def info(message):
             return
 
        
-@bot.callback_query_handler(func=lambda call: True) #обработчик команд 
+@bot.callback_query_handler(func=lambda call: True) #обработчик команд кнопок
 def commandshandlebtn(call):
     mess = call.data
     message = call.message
