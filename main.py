@@ -9,21 +9,14 @@ chat = cb.ChatBot(TB_KEY)
 def exec(call):
     chat.cmd_hand_btn(call)
 
-@chat.bot.message_handler(commands=['menu', 'start']) #Отправка меню
+@chat.bot.message_handler() #Отправка меню
 def exec(message):
-    chat.main_menu(message)
-
-@chat.bot.message_handler(commands=['swchat']) #пример перенаравления в чат
-def exec(message):
-    chat.swchat(message)
-
-@chat.bot.message_handler(commands = ['url']) #Выдача ссылки
-def exec(message):
-    chat.url(message)
-    
-@chat.bot.message_handler() # Анализ и обработака текстовых сообщений
-def exec(message):
-    chat.say(message)
+    print(message)
+    if message.text=='/start'     : chat.autorization(message)
+    elif message.text=='/menu'    : chat.main_menu(message) # Вызов главного меню
+    elif message.text=='/swchat'  : chat.swchat(message)   # Пример перенаравления в чат
+    elif message.text=='/url'     : chat.url(message)      # Выдача ссылки
+    else  : chat.say(message)      # Анализ и обработака текстовых сообщений     
 
 @chat.bot.callback_query_handler(func=lambda call: True) #обработчик команд кнопок
 def exec(call):

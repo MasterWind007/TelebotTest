@@ -49,7 +49,6 @@ class ChatBot:
             return self.call_data[tab:]
         
     def autorization(self, message): # авторизация
-        if message.text == 'Вход в систему':
             markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
             exit = types.KeyboardButton('Выход')
             markup.add(exit)
@@ -58,10 +57,9 @@ class ChatBot:
 
     def login(self, message): # Логин
             if message.text == 'Pass':
-                self.AUTH = True
-                self.bot.send_message(message.chat.id, 'Вход успешен')
+                self.main_menu(message)
+                #self.bot.send_message(message.chat.id, 'Вход успешен')
             else:
-                self.AUTH = False
                 self.bot.send_message(message.chat.id, 'Пароль неверен') 
  
     def build_menu(self, buttons, n_cols,  header_buttons=None, footer_buttons=None): #сборка инлайн клавиатуры главного меню
@@ -109,7 +107,7 @@ class ChatBot:
             btn_list.append(types.InlineKeyboardButton(file_nm, callback_data='getdoc '+file_nm))
         reply_markup = types.InlineKeyboardMarkup(self.build_menu(btn_list, n_cols=1),row_width=1)
         txt='Список документов, как ты просил:'
-        with open(f'{self.com_res_path["docs"]}M1.png', 'rb') as img:
+        with open(f'{self.com_res_path["pix"]}M1.png', 'rb') as img:
             self.bot.send_photo(message.chat.id, img, caption=txt ,reply_markup=reply_markup, parse_mode='HTML' )
 
     def sendpix(self, message, fname): # отправить картинку в чат
@@ -186,6 +184,9 @@ class ChatBot:
             else:
                 self.bot.reply_to(message, self.chat_answ['mas_noUnd'])
                 return
+            
+    def del_last_msg(self, message): #  Удаление последнего сообщения
+        self.bot.delete_message(message.chat.id, message.message_id)
 
     def cmd_hand_btn(self, call): # Обработка комманд от нажатых кнопок
         mess = call.data
