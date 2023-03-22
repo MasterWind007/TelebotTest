@@ -14,7 +14,7 @@ def exec(message):
     print(message)
     if message.text=='/start'     : chat.autorization(message)
     elif message.text=='/menu'    : chat.main_menu(message) # Вызов главного меню
-    elif message.text=='/swchat'  : chat.swchat(message)   # Пример перенаравления в чат
+    elif message.text=='/swchat'  : chat.swchat(message)   # Перенаравление в чат
     elif message.text=='/url'     : chat.url(message)      # Выдача ссылки
     else  : chat.say(message)      # Анализ и обработака текстовых сообщений     
 
