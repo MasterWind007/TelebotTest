@@ -61,13 +61,14 @@ class ChatBot:
 
     def login(self, message): # Логин
             if message.text == 'Pass':
+                self.del_last_msg(message)
+                self.bot.send_message(message.chat.id, 'Вы успешно авторизованы!')
                 self.main_menu(message)
                 self.auth = True
-                #self.bot.send_message(message.chat.id, 'Вход успешен')
             else:
                 self.auth = False
-                self.bot.send_message(message.chat.id, 'Пароль неверен')
-            self.del_last_msg(message)     
+                self.del_last_msg(message)
+                self.bot.send_message(message.chat.id, 'Неправильный пароль! Прпробуйте еще раз.')
  
     def build_menu(self, buttons, n_cols,  header_buttons=None, footer_buttons=None): #сборка инлайн клавиатуры главного меню
         menu = [buttons[i:i + n_cols] for i in range(0, len(buttons), n_cols)]
