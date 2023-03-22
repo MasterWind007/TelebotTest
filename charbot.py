@@ -6,7 +6,7 @@ import os
 
 class ChatBot:
     def __init__(self, bt):
-        self.AUTH = False
+        self.auth = False
         # self.bot = tb.TeleBot('6140511617:AAG5Nk3kfedflop46XBKrKWQJFUcH9li7Yo')
         self.bot = tb.TeleBot(bt)
         self.chat_answ     = {'mas_hello' :['Привет.', 'День добрый!', 'Добрый день!', 'Здравствуй!', 'Доброго дня!'],
@@ -21,6 +21,10 @@ class ChatBot:
                                 'say_hi_list'  :['привет', 'здравствуй', 'здравствуйте', 'доброго дня', 'день добрый', 'здорова', 'здоров', 'утро доброе', 'доброе утро', 'добрый вечер', 'добрый день', 'приветствую'],
                                 'say_nst_list' :['как настроение', 'как твое настроение', 'как настрой', 'что с настроением', 'настроение как', 'что с настроем' ]
                               }
+        self.chat_logon      ={ 'acc_no': ['Пожалуйста авторизуйтесь!', 'У Вас нет доступа!', 'Я с Вами не знаком, автроизуйтесь пожалуйста.', 'Не разговариваю с назнакомцами, авторизуйтесь!', 'Вы не авторизованы!'],
+                                'acc_yes':['Добро пожаловать!', 'Доступ разрешен!', 'Вы авторизованы!', 'Как Вам удалось угадать пароль ?', 'И снова здравствуйте!'] 
+                              }
+
         self.main_cmd       = [types.BotCommand("start", "Запуск Бота"), types.BotCommand("menu", "Вызов меню")] # Элементы меню команд.
         self.com_res_path   = {'audio':'Comon/Res/Audio/', 'docs':'Comon/Res/Docs/', 'pix':'Comon/Res/Pix/', 'video':'Comon/Res/Video/'} # Пути к общим папкам ресурсов
         self.tmp_path       = {'audio':'Comon/temp/Audio/', 'docs':'Comon/temp/Docs/', 'pix':'Comon/temp/Pix/', 'video':'Comon/temp/Video/'} #Пути к временным папкам документов
@@ -52,14 +56,16 @@ class ChatBot:
             markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
             exit = types.KeyboardButton('Выход')
             markup.add(exit)
-            sent = self.bot.send_message(message.chat.id, 'Введите ключ для входа в систему',  reply_markup=markup)
+            sent = self.bot.send_message(message.chat.id, 'Введите ключ для входа в систему')
             self.bot.register_next_step_handler( sent, self.login)
 
     def login(self, message): # Логин
             if message.text == 'Pass':
                 self.main_menu(message)
+                self.auth = True
                 #self.bot.send_message(message.chat.id, 'Вход успешен')
             else:
+                self.auth = False
                 self.bot.send_message(message.chat.id, 'Пароль неверен') 
  
     def build_menu(self, buttons, n_cols,  header_buttons=None, footer_buttons=None): #сборка инлайн клавиатуры главного меню
@@ -126,7 +132,13 @@ class ChatBot:
 
     def main_menu(self, message): # Обработчик команды /start
         reply_markup = types.InlineKeyboardMarkup(self.build_menu(self.inln_btns['main_btns'], n_cols=2),row_width=1)
-        txt=f'Привет { message.from_user.first_name}!\r\n\r\nЗдесь список команд \r\nкоторые тебе доступны:'
+        txt=f'Привет { message.from_user.first_name}!\r\n\r\n\
+Я учебный бот, на котором мой создатель\n\
+отрабатывает навыки написания мне подобных.\n\
+Мой функционал со временем будет расширяться,\n\
+обрастая новыми возможностями.\n\
+Но пока, что мы имеем, то и имеем\n\n\
+Здесь список команд \r\nкоторые тебе доступны:'
         with open(f'{self.com_res_path["pix"]}M4.png', 'rb') as img:
             self.bot.send_photo(message.chat.id, img, caption=txt ,reply_markup=reply_markup, parse_mode='HTML' )
 
@@ -139,6 +151,8 @@ class ChatBot:
             src = f'Users/{message.from_user.first_name}_{message.from_user.last_name}/Pix/{message.chat.id}_' + file_info.file_path.replace('photos/', '')
             with open(src, 'wb') as new_file:
                 new_file.write(downloaded_file)
+            self.del_last_msg(message)
+            self.bot.send_message(chat_id=message.chat.id, text='Данные сохранил!')
         elif message.content_type == 'document':
             Path(f'Users/{message.from_user.first_name}_{message.from_user.last_name}/Docs/').mkdir(parents=True, exist_ok=True)
             file_info = self.bot.get_file(message.document.file_id)
@@ -146,6 +160,8 @@ class ChatBot:
             src = f'Users/{message.from_user.first_name}_{message.from_user.last_name}/Docs/' + message.document.file_name
             with open(src, 'wb') as new_file:
                 new_file.write(downloaded_file)
+            self.del_last_msg(message)
+            self.bot.send_message(chat_id=message.chat.id, text='Данные сохранил!')
 
     def send_menu(self, message, menu): #создать меню
         self.build_smenu() 
