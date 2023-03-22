@@ -66,7 +66,8 @@ class ChatBot:
                 #self.bot.send_message(message.chat.id, 'Вход успешен')
             else:
                 self.auth = False
-                self.bot.send_message(message.chat.id, 'Пароль неверен') 
+                self.bot.send_message(message.chat.id, 'Пароль неверен')
+            self.del_last_msg(message)     
  
     def build_menu(self, buttons, n_cols,  header_buttons=None, footer_buttons=None): #сборка инлайн клавиатуры главного меню
         menu = [buttons[i:i + n_cols] for i in range(0, len(buttons), n_cols)]
