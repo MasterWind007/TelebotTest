@@ -1,6 +1,7 @@
 import telebot as tb
 from telebot import types
 import random
+import ocrmodule
 from io import BytesIO
 import os
 
@@ -8,7 +9,10 @@ class ChatBot:
     def __init__(self, bt):
         self.auth = False
         # self.bot = tb.TeleBot('6140511617:AAG5Nk3kfedflop46XBKrKWQJFUcH9li7Yo')
+        self.ocrmode = False
+        self.ocr_image_file = r'Comon\Tmp\ocrimg.jpg' 
         self.bot = tb.TeleBot(bt)
+        self.ocr= ocrmodule.OcrClass(self.ocr_image_file)
         self.chat_answ     = {'mas_hello' :['Привет.', 'День добрый!', 'Добрый день!', 'Здравствуй!', 'Доброго дня!'],
                               'mas_del'   :['Заебок','Норм', 'Пойдет', 'Хорошо', 'Отлично', 'Лучше не бывает!', 'Лучше всех!', 'Как обычно'],
                               'mas_nastr' :['Прекрасное!', 'Замечательное!', 'Рабочее...', 'Вполне сносное...'],
@@ -21,7 +25,7 @@ class ChatBot:
                                 'say_hi_list'  :['привет', 'здравствуй', 'здравствуйте', 'доброго дня', 'день добрый', 'здорова', 'здоров', 'утро доброе', 'доброе утро', 'добрый вечер', 'добрый день', 'приветствую'],
                                 'say_nst_list' :['как настроение', 'как твое настроение', 'как настрой', 'что с настроением', 'настроение как', 'что с настроем' ]
                               }
-        self.chat_logon      ={ 'acc_no': ['Пожалуйста авторизуйтесь!', 'У Вас нет доступа!', 'Я с Вами не знаком, автроизуйтесь пожалуйста.', 'Не разговариваю с назнакомцами, авторизуйтесь!', 'Вы не авторизованы!'],
+        self.chat_logon     = { 'acc_no': ['Пожалуйста авторизуйтесь!', 'У Вас нет доступа!', 'Я с Вами не знаком, автроизуйтесь пожалуйста.', 'Не разговариваю с назнакомцами, авторизуйтесь!', 'Вы не авторизованы!'],
                                 'acc_yes':['Добро пожаловать!', 'Доступ разрешен!', 'Вы авторизованы!', 'Как Вам удалось угадать пароль ?', 'И снова здравствуйте!'] 
                               }
 
@@ -34,9 +38,11 @@ class ChatBot:
         self.inln_btns      = {'main_btns':[types.InlineKeyboardButton("Вызов меню 📖", callback_data='menu'), # Элементы кнопок инлайн клавиатур
                                 types.InlineKeyboardButton("Мои документы 📄", callback_data='mydoclist'),
                                 types.InlineKeyboardButton("Мои картинки 🏞", callback_data='mypixlist'),
+                                types.InlineKeyboardButton("Распознать текст 🏞", callback_data='myocr'),
                                 types.InlineKeyboardButton(text='Наш сайт 🧻', web_app=types.WebAppInfo('https://ya.ru')),
                                 types.InlineKeyboardButton(text='Перейти в чат 🪠', switch_inline_query="Telegram")]
                                }
+        
 
     class CommandArgs:  #класс для хранения параметров кнопки пример команды: /getpix photo.jpg 
         def __init__(self, cd='', cmd=''):
@@ -144,17 +150,23 @@ class ChatBot:
         with open(f'{self.com_res_path["pix"]}M4.png', 'rb') as img:
             self.bot.send_photo(message.chat.id, img, caption=txt ,reply_markup=reply_markup, parse_mode='HTML' )
 
-    def handler_file(self, message): # Обработчик файлов , присланнхы пользователем в чат
+    def handler_file(self, message): # Обработчик файлов , присланых пользователем в чат
         from pathlib import Path
         if message.content_type == 'photo':
             Path(f'Users/{message.from_user.first_name}_{message.from_user.last_name}/Pix/').mkdir(parents=True, exist_ok=True)
             file_info = self.bot.get_file(message.photo[len(message.photo) - 1].file_id)
             downloaded_file = self.bot.download_file(file_info.file_path)
-            src = f'Users/{message.from_user.first_name}_{message.from_user.last_name}/Pix/{message.chat.id}_' + file_info.file_path.replace('photos/', '')
+            if self.ocrmode == False:
+                src = f'Users/{message.from_user.first_name}_{message.from_user.last_name}/Pix/{message.chat.id}_' + file_info.file_path.replace('photos/', '')
+            else: 
+                src = self.ocr_image_file
             with open(src, 'wb') as new_file:
                 new_file.write(downloaded_file)
             self.del_last_msg(message)
             self.bot.send_message(chat_id=message.chat.id, text='Данные сохранил!')
+            if self.ocrmode == True:
+                self.ocr_to_str(message)
+            self.ocrmode =False        
         elif message.content_type == 'document':
             Path(f'Users/{message.from_user.first_name}_{message.from_user.last_name}/Docs/').mkdir(parents=True, exist_ok=True)
             file_info = self.bot.get_file(message.document.file_id)
@@ -184,6 +196,21 @@ class ChatBot:
     <a href='https://yndex.ru/'>Яндекс</a>\n\
     <a href='https://coogle.com/'>Google</a>"
         self.bot.send_message(message.chat.id, text=txt, parse_mode="HTML")#, reply_markup = markup)    
+    
+    def ocr_mode_on(self, message):
+        self.ocrmode = True
+        self.bot.send_message(message.chat.id, text='Ожидаю картинку с текстом.')
+
+
+    def ocr_mode_off(self):
+        self.ocrmode = False 
+ 
+
+    def ocr_to_str(self,message):
+        self.ocr.img_from_file(self.ocr_image_file)
+        txt = self.ocr.image_to_string()
+        self.bot.send_message(message.chat.id, text=txt)
+        
 
     def say(self, message): #  отправка ответа на распространенные вопросы
         mess = message.text.lower() 
@@ -212,8 +239,9 @@ class ChatBot:
         c_arg = self.CommandArgs() # определили объект получающий аргументы из строки команд чата 
         if   mess == "mypixlist": self.my_pixlist(message)
         elif mess == "mydoclist": self.my_doclist(message)
-        elif c_arg.is_exist(mess, "getpix"): self.sendpix(message,c_arg.arg_name()) # получение команд и их рагументов от кнопок
-        elif c_arg.is_exist(mess, "getdoc"): self.sendfile(message,c_arg.arg_name())# получение команд и их рагументов от кнопок
+        elif mess == "myocr": self.ocr_mode_on(message)
+        elif c_arg.is_exist(mess, "getpix"): self.sendpix(message,c_arg.arg_name()) # получение команд и их аргументов от кнопок
+        elif c_arg.is_exist(mess, "getdoc"): self.sendfile(message,c_arg.arg_name())# получение команд и их аргументов от кнопок
         elif mess == 'menu': self.main_menu(message)
         # bot.answer_callback_query(call.id, show_alert=True, text="вызвано меню")
     # class  ChatBot ------
