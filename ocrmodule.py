@@ -3,6 +3,7 @@ import cv2
 
 class OcrClass:
     def __init__(self, file_path):
+        self.teceract_exe_path = ''
         pytesseract.pytesseract.tesseract_cmd = "C:\\Program Files\\Tesseract-OCR\\tesseract.exe"
         self.img = cv2.imread(file_path)
         self.img_copy = None
