@@ -8,7 +8,7 @@ import os
 class ChatBot:
     def __init__(self, bt):
         self.auth = False
-        # self.bot = tb.TeleBot('6140511617:AAG5Nk3kfedflop46XBKrKWQJFUcH9li7Yo')
+        # self.bot = tb.TeleBot('')
         self.ocrmode = False
         self.ocr_image_file = r'Comon\Tmp\ocrimg.jpg' 
         self.bot = tb.TeleBot(bt)
