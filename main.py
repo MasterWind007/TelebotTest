@@ -2,10 +2,10 @@
 import charbot as cb
 
 
-   
-TB_KEY = '' # тут должен быть ключ, но  я его не дам )))
+with open(f'Comon\Res\Key') as key:  
+    tb_key = key.read() # тут должен быть ключ, но  я его не дам )))
 
-chat = cb.ChatBot(TB_KEY)
+chat = cb.ChatBot(tb_key)
 
 
 @chat.bot.message_handler(content_types=['photo', 'document', 'audio', 'video'])  #обработчик получаемого контента
