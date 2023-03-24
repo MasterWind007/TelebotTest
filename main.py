@@ -24,7 +24,7 @@ def exec(message):
         if message.text=='/menu'    : chat.main_menu(message) # Вызов главного меню
         elif message.text=='/swchat'  : chat.swchat(message)   # Перенаравление в чат
         elif message.text=='/url'     : chat.url(message)      # Выдача ссылки
-        elif message.text=='/ocr'     : pass
+        elif message.text=='/ocr'     : chat.ocr_mode_on(message)
         else  : chat.say(message)      # Анализ и обработака текстовых сообщений
     else: 
         chat.bot.send_message(message.chat.id, chat.rand_ansv(chat.chat_logon['acc_no']))         
