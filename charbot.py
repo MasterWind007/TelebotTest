@@ -12,7 +12,7 @@ class ChatBot:
         self.ocr_image_file = r'Comon\Tmp\ocrimg.jpg' 
         self.bot = tb.TeleBot(bt)
         self.ocr= ocrmodule.OcrClass(self.ocr_image_file)
-        self.ocr.teceract_exe_path = 'D:\\Program Files\\Tesseract-OCR\\tesseract.exe'
+        self.ocr.set_tesseract_path( 'D:\\Program Files\\Tesseract-OCR\\tesseract.exe')
         self.chat_answ     = {'mas_hello' :['Привет.', 'День добрый!', 'Добрый день!', 'Здравствуй!', 'Доброго дня!'],
                               'mas_del'   :['Заебок','Норм', 'Пойдет', 'Хорошо', 'Отлично', 'Лучше не бывает!', 'Лучше всех!', 'Как обычно'],
                               'mas_nastr' :['Прекрасное!', 'Замечательное!', 'Рабочее...', 'Вполне сносное...'],
