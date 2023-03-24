@@ -3,7 +3,7 @@ import charbot as cb
 
 
    
-TB_KEY = '' # тут должен быть ключ, но  я его не дам )))
+TB_KEY = '6140511617:AAG5Nk3kfedflop46XBKrKWQJFUcH9li7Yo' # тут должен быть ключ, но  я его не дам )))
 
 chat = cb.ChatBot(TB_KEY)
 
