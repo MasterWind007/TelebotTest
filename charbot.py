@@ -165,6 +165,7 @@ class ChatBot:
             self.del_last_msg(message)
             self.bot.send_message(chat_id=message.chat.id, text='Данные сохранил!')
             if self.ocrmode == True:
+                self.bot.send_message(chat_id=message.chat.id, text='Пытаюсь обработать...')
                 self.ocr_to_str(message)
             self.ocrmode =False        
         elif message.content_type == 'document':
