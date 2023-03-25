@@ -16,10 +16,10 @@ class OcrClass:
         self.img = cv2.imread(file_path)
 
     def image_to_string(self):
-        return pytesseract.image_to_string(self.img)
+        return pytesseract.image_to_string(self.img, lang ='rus+eng')
  
     def image_to_data(self):
-        return pytesseract.image_to_data(self.img, output_type=pytesseract.Output.DICT)
+        return pytesseract.image_to_data(self.img, lang='rus+eng', output_type=pytesseract.Output.DICT)
     
     def emphasize_from_img(self, tg_word = ''):
         img_copy = self.img.copy()
