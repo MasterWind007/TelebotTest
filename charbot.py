@@ -59,9 +59,9 @@ class ChatBot:
             return self.call_data[tab:]
         
     def autorization(self, message): # авторизация
-            markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-            exit = types.KeyboardButton('Выход')
-            markup.add(exit)
+            # markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+            # exit = types.KeyboardButton('Выход')
+            # markup.add(exit)
             sent = self.bot.send_message(message.chat.id, 'Введите ключ для входа в систему')
             self.bot.register_next_step_handler( sent, self.login)
 
@@ -74,7 +74,8 @@ class ChatBot:
             else:
                 self.auth = False
                 self.del_last_msg(message)
-                self.bot.send_message(message.chat.id, 'Неправильный пароль! Прпробуйте еще раз.')
+                sent = self.bot.send_message(message.chat.id, 'Неправильный пароль! Прпробуйте еще раз.')
+                self.bot.register_next_step_handler( sent, self.login)
  
     def build_menu(self, buttons, n_cols,  header_buttons=None, footer_buttons=None): #сборка инлайн клавиатуры главного меню
         menu = [buttons[i:i + n_cols] for i in range(0, len(buttons), n_cols)]
