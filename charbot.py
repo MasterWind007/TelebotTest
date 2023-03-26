@@ -75,7 +75,7 @@ class ChatBot:
                 self.auth = False
                 self.del_last_msg(message)
                 sent = self.bot.send_message(message.chat.id, 'Неправильный пароль! Прпробуйте еще раз.')
-                self.bot.register_next_step_handler( sent, self.login)
+                self.bot.register_next_step_handler(sent, self.login)
  
     def build_menu(self, buttons, n_cols,  header_buttons=None, footer_buttons=None): #сборка инлайн клавиатуры главного меню
         menu = [buttons[i:i + n_cols] for i in range(0, len(buttons), n_cols)]
