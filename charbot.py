@@ -4,15 +4,20 @@ import random
 import ocrmodule
 from io import BytesIO
 import os
+from barcode import BarCode
+import cv2
 
 class ChatBot:
     def __init__(self, bt):
         self.auth = False
-        self.ocrmode = False
-        self.ocr_image_file = r'Comon\Tmp\ocrimg.jpg' 
+        self.is_ocrmode = False
+        self.is_barmode = False
+        self.ocr_image_file = r'Comon\Tmp\ocrimg.jpg'
+        self.bar_image_file = r'Comon\Tmp\barcode.jpg' 
         self.bot = tb.TeleBot(bt)
         self.ocr= ocrmodule.OcrClass(self.ocr_image_file)
         self.ocr.set_tesseract_path( 'D:\\Program Files\\Tesseract-OCR\\tesseract.exe')
+        self.barcode = BarCode()
         self.chat_answ     = {'mas_hello' :['Привет.', 'День добрый!', 'Добрый день!', 'Здравствуй!', 'Доброго дня!'],
                               'mas_del'   :['Заебок','Норм', 'Пойдет', 'Хорошо', 'Отлично', 'Лучше не бывает!', 'Лучше всех!', 'Как обычно'],
                               'mas_nastr' :['Прекрасное!', 'Замечательное!', 'Рабочее...', 'Вполне сносное...'],
@@ -39,6 +44,7 @@ class ChatBot:
                                 types.InlineKeyboardButton("Мои документы 📄", callback_data='mydoclist'),
                                 types.InlineKeyboardButton("Мои картинки 🏞", callback_data='mypixlist'),
                                 types.InlineKeyboardButton("Распознать текст 🏞", callback_data='myocr'),
+                                types.InlineKeyboardButton("Распознать Баркод 🪪", callback_data='mybarcode'),
                                 types.InlineKeyboardButton(text='Наш сайт 🧻', web_app=types.WebAppInfo('https://ya.ru')),
                                 types.InlineKeyboardButton(text='Перейти в чат 🪠', switch_inline_query="Telegram")]
                                }
@@ -162,38 +168,52 @@ class ChatBot:
         with open(f'{self.com_res_path["pix"]}M4.png', 'rb') as img:
             self.bot.send_photo(message.chat.id, img, caption=txt ,reply_markup=reply_markup, parse_mode='HTML' )
 
+    def save_pix_file(self, message, path):
+            file_info = self.bot.get_file(message.photo[len(message.photo) - 1].file_id)
+            from_chat_file = self.bot.download_file(file_info.file_path)            
+            with open(path, 'wb') as new_file:
+                new_file.write(from_chat_file)
+            self.del_last_msg(message)
+            self.bot.send_message(chat_id=message.chat.id, text='...изображение принял!')
+    
+    def save_doc_file(self, message, path):
+            file_info = self.bot.get_file(message.document.file_id)
+            downloaded_file = self.bot.download_file(file_info.file_path)
+            with open(path, 'wb') as new_file:
+                new_file.write(downloaded_file)
+            self.del_last_msg(message)
+            self.bot.send_message(chat_id=message.chat.id, text='...документ сохранил!')                      
+
     def handler_file(self, message): # Обработчик файлов , присланых пользователем в чат
         from pathlib import Path
         if message.content_type == 'photo':
-            Path(f'Users/{message.from_user.first_name}_{message.from_user.last_name}/Pix/').mkdir(parents=True, exist_ok=True)
-            file_info = self.bot.get_file(message.photo[len(message.photo) - 1].file_id)
-            downloaded_file = self.bot.download_file(file_info.file_path)
-            if self.ocrmode == False:
-                src = f'Users/{message.from_user.first_name}_{message.from_user.last_name}/Pix/{message.chat.id}_' + file_info.file_path.replace('photos/', '')
-            else: 
-                src = self.ocr_image_file
-            with open(src, 'wb') as new_file:
-                new_file.write(downloaded_file)
-            self.del_last_msg(message)
-            self.bot.send_message(chat_id=message.chat.id, text='Данные сохранил!')
-            if self.ocrmode == True:
+            if self.is_ocrmode == True:
+                path = self.ocr_image_file
+                self.save_pix_file(message, path)
                 self.bot.send_message(chat_id=message.chat.id, text='Пытаюсь обработать...')
                 self.ocr_to_str(message)
-            self.ocrmode =False        
+                self.is_ocrmode = False                     
+                return
+            elif self.is_barmode ==True:
+                path = self.bar_image_file
+                self.save_pix_file(message, path)
+                self.bar_to_str(message)
+                self.is_barmode = False
+                return
+            else:
+                file_info = self.bot.get_file(message.photo[len(message.photo) - 1].file_id)
+                Path(f'Users/{message.from_user.first_name}_{message.from_user.last_name}/Pix/').mkdir(parents=True, exist_ok=True)
+                path = f'Users/{message.from_user.first_name}_{message.from_user.last_name}/Pix/{message.chat.id}_' + file_info.file_path.replace('photos/', '')
         elif message.content_type == 'document':
             Path(f'Users/{message.from_user.first_name}_{message.from_user.last_name}/Docs/').mkdir(parents=True, exist_ok=True)
-            file_info = self.bot.get_file(message.document.file_id)
-            downloaded_file = self.bot.download_file(file_info.file_path)
-            src = f'Users/{message.from_user.first_name}_{message.from_user.last_name}/Docs/' + message.document.file_name
-            with open(src, 'wb') as new_file:
-                new_file.write(downloaded_file)
-            self.del_last_msg(message)
-            self.bot.send_message(chat_id=message.chat.id, text='Данные сохранил!')
+            path = f'Users/{message.from_user.first_name}_{message.from_user.last_name}/Docs/' + message.document.file_name
+            self.save_doc_file(self, message, path)
 
-    def send_menu(self, message, menu): #создать меню
-        self.build_smenu() 
-        reply_markup = types.InlineKeyboardMarkup(self.build_menu(menu, n_cols=2),row_width=1)
-        self.bot.send_message(chat_id=message.chat.id, text='Список доступных команд:', reply_markup=reply_markup)
+
+        def send_menu(self, message, menu): #создать меню
+            self.build_smenu() 
+            reply_markup = types.InlineKeyboardMarkup(self.build_menu(menu, n_cols=2),row_width=1)
+            self.bot.send_message(chat_id=message.chat.id, text='Список доступных команд:', reply_markup=reply_markup)
 
     def swchat(self, message): # Перейти в другой чат
         markup = types.InlineKeyboardMarkup()
@@ -211,13 +231,27 @@ class ChatBot:
         self.bot.send_message(message.chat.id, text=txt, parse_mode="HTML")#, reply_markup = markup)    
     
     def ocr_mode_on(self, message):
-        self.ocrmode = True
+        self.is_ocrmode = True
         self.bot.send_message(message.chat.id, text='Ожидаю картинку с текстом.')
 
 
     def ocr_mode_off(self):
-        self.ocrmode = False 
- 
+        self.is_ocrmode = False
+
+    def bar_mode_on(self, message):
+        self.is_barmode = True 
+        self.bot.send_message(message.chat.id, text='Ожидаю картинку с баркодом.')        
+    
+    def bar_to_str(self, message):
+        text  = ''
+        path = self.bar_image_file
+        img1 = self.barcode.img_from_file(path)
+        img = self.barcode.draw_rect_bars(img1)
+        for item in self.barcode.decoded:
+            text += str(item.data,'utf-8') +'\n'
+        # self.bot.send_photo(message.chat.id, img1 , caption= text)
+        self.bot.send_message(message.chat.id, text = text)
+
 
     def ocr_to_str(self,message):
         self.ocr.img_from_file(self.ocr_image_file)
@@ -253,6 +287,7 @@ class ChatBot:
         if   mess == "mypixlist": self.my_pixlist(message)
         elif mess == "mydoclist": self.my_doclist(message)
         elif mess == "myocr": self.ocr_mode_on(message)
+        elif mess == "mybarcode": self.bar_mode_on(message)
         elif c_arg.is_exist(mess, "getpix"): self.sendpix(message,c_arg.arg_name()) # получение команд и их аргументов от кнопок
         elif c_arg.is_exist(mess, "getdoc"): self.sendfile(message,c_arg.arg_name())# получение команд и их аргументов от кнопок
         elif mess == 'menu': self.main_menu(message)
