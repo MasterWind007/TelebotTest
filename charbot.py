@@ -105,12 +105,13 @@ class ChatBot:
         btn_list = []
         for file_nm in pix_list:
             btn_list.append(types.InlineKeyboardButton(file_nm, callback_data='getpix '+file_nm))
+        btn_list.append(types.InlineKeyboardButton("Меню. 📖", callback_data='menu'))
         reply_markup = types.InlineKeyboardMarkup(self.build_menu(btn_list, n_cols=1),row_width=1)
         # pix_content = 'Список ваших сохраненных картинок:\n<b>'
         # for file_nm in pix_list:
         #     pix_content += file_nm+'\n'
         # pix_content+= '</b>'    
-        txt='Список твоих картинок, как ты просил:'
+        txt='Список твоих картинок, как просил:'
         with open(f'{self.com_res_path["pix"]}M1.png', 'rb') as img:
             self.bot.send_photo(message.chat.id, img, caption=txt ,reply_markup=reply_markup, parse_mode='HTML' )
         
@@ -120,24 +121,34 @@ class ChatBot:
         btn_list = []
         for file_nm in list:
             btn_list.append(types.InlineKeyboardButton(file_nm, callback_data='getdoc '+file_nm))
+        btn_list.append(types.InlineKeyboardButton("Меню. 📖", callback_data='menu'))
         reply_markup = types.InlineKeyboardMarkup(self.build_menu(btn_list, n_cols=1),row_width=1)
-        txt='Список документов, как ты просил:'
+        txt='Список твоих документов, как просил:'
         with open(f'{self.com_res_path["pix"]}M1.png', 'rb') as img:
             self.bot.send_photo(message.chat.id, img, caption=txt ,reply_markup=reply_markup, parse_mode='HTML' )
 
     def sendpix(self, message, fname): # отправить картинку в чат
+        btn_list = []
+        btn_list.append(types.InlineKeyboardButton("Меню. 📖", callback_data='menu'))
+        reply_markup = types.InlineKeyboardMarkup(self.build_menu(btn_list, n_cols=1),row_width=1)
         path = f'Users/{message.chat.first_name}_{message.chat.last_name}/Pix/'
         path+=fname
         with open(path, 'rb') as img:
-            self.bot.send_photo(message.chat.id, img, caption=self.rand_ansv(self.chat_answ['mas_sendf']))
+            self.bot.send_photo(message.chat.id, img, caption=self.rand_ansv(self.chat_answ['mas_sendf']),reply_markup=reply_markup)
+
+       
 
     def sendfile(self, message, fname): # отправить файл в чат
+        btn_list = []
+        btn_list.append(types.InlineKeyboardButton("Меню. 📖", callback_data='menu'))
+        reply_markup = types.InlineKeyboardMarkup(self.build_menu(btn_list, n_cols=1),row_width=1)
         path = f'Users/{message.chat.first_name}_{message.chat.last_name}/Docs/'
         path+=fname
         with open(path, 'rb') as tmp:
             obj = BytesIO(tmp.read())
             obj.name = fname
-            self.bot.send_document(message.chat.id, document=obj, caption=self.rand_ansv(self.chat_answ['mas_sendf']))
+            self.bot.send_document(message.chat.id, document=obj, caption=self.rand_ansv(self.chat_answ['mas_sendf'],reply_markup=reply_markup))
+
 
     def main_menu(self, message): # Обработчик команды /start
         reply_markup = types.InlineKeyboardMarkup(self.build_menu(self.inln_btns['main_btns'], n_cols=2),row_width=1)
