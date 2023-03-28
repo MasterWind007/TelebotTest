@@ -232,7 +232,7 @@ class ChatBot:
     
     def ocr_mode_on(self, message):
         self.is_ocrmode = True
-        self.bot.send_message(message.chat.id, text='Ожидаю картинку с текстом.')
+        self.bot.send_message(message.chat.id, text='Ожидаю фото или картинку с текстом.')
 
 
     def ocr_mode_off(self):
@@ -240,16 +240,16 @@ class ChatBot:
 
     def bar_mode_on(self, message):
         self.is_barmode = True 
-        self.bot.send_message(message.chat.id, text='Ожидаю картинку с баркодом.')        
+        self.bot.send_message(message.chat.id, text='Ожидаю фото или картинку с баркодом.')        
     
     def bar_to_str(self, message):
         text  = ''
         path = self.bar_image_file
-        img1 = self.barcode.img_from_file(path)
-        img = self.barcode.draw_rect_bars(img1)
+        img = self.barcode.img_from_file(path)
+        img = self.barcode.draw_rect_bars(img)
         for item in self.barcode.decoded:
             text += str(item.data,'utf-8') +'\n'
-        # self.bot.send_photo(message.chat.id, img1 , caption= text)
+        self.bot.send_photo(message.chat.id, img , caption= text)
         self.bot.send_message(message.chat.id, text = text)
 
 
