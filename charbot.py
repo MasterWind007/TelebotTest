@@ -16,7 +16,7 @@ class ChatBot:
         self.bar_image_file = r'Comon\Tmp\barcode.jpg' 
         self.bot = tb.TeleBot(bt)
         self.ocr= ocrmodule.OcrClass(self.ocr_image_file)
-        self.ocr.set_tesseract_path( 'D:\\Program Files\\Tesseract-OCR\\tesseract.exe')
+        self.ocr.set_tesseract_path('C:\\Program Files\\Tesseract-OCR\\tesseract.exe')
         self.barcode = BarCode()
         self.chat_answ     = {'mas_hello' :['Привет.', 'День добрый!', 'Добрый день!', 'Здравствуй!', 'Доброго дня!'],
                               'mas_del'   :['Заебок','Норм', 'Пойдет', 'Хорошо', 'Отлично', 'Лучше не бывает!', 'Лучше всех!', 'Как обычно'],
@@ -249,7 +249,7 @@ class ChatBot:
         img = self.barcode.draw_rect_bars(img)
         for item in self.barcode.decoded:
             text += str(item.data,'utf-8') +'\n'
-        self.bot.send_photo(message.chat.id, img , caption= text)
+        # self.bot.send_photo(message.chat.id, img , caption= text)
         self.bot.send_message(message.chat.id, text = text)
 
 

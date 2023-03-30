@@ -1,6 +1,5 @@
 from pyzbar import pyzbar as bar
 import cv2
-import numpy as np
 
 class BarCode:
     def __init__(self):
