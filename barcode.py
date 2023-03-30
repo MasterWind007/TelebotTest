@@ -26,6 +26,7 @@ class BarCode:
     def corp_rect_bar(self, img):
         self.decoded = self.decode(img)
         img = img[self.decoded.rect.left, self.decoded.rect.top : 
-                  self.decoded.rect.left + self.decoded.rect.width, self.decoded.rect.top + self.decoded.rect.height]
+                  self.decoded.rect.left + self.decoded.rect.width,
+                  self.decoded.rect.top + self.decoded.rect.height]
         return img
 
