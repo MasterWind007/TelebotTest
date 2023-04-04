@@ -84,7 +84,7 @@ class ChatBot:
                 sent = self.bot.send_message(message.chat.id, 'Неправильный пароль! Прпробуйте еще раз.')
                 self.bot.register_next_step_handler(sent, self.login)
  
-    def build_menu(self, buttons, n_cols,  header_buttons=None, footer_buttons=None): #сборка инлайн клавиатуры главного меню
+    def build_menu(self, buttons, n_cols,  header_buttons=None, footer_buttons=None): #сборка инлайн клавиатуры главного меню (спизженно скакого то форума)
         menu = [buttons[i:i + n_cols] for i in range(0, len(buttons), n_cols)]
         if header_buttons:
             menu.insert(0, [header_buttons])
@@ -96,6 +96,10 @@ class ChatBot:
         self.bot.set_my_commands(self.main_cmd)
 
     def list_dir (self, dir, ext=''): # получает список файлов с указанным расширением из указаной папки 
+        '''
+        dir -  папка сканирования
+        ext -  маска по расширанию файлов (по умолчанию все файлы)
+        '''
         content = os.listdir(dir)
         f_list = []
         for file in content:
