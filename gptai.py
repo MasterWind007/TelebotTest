@@ -22,8 +22,10 @@ class GptChat:
         self.max_tokens = tkn
 
     def answer(self, ask):
-        ansv = openai.Completion.create(engine=self.engine, prompt=ask,
-                                        temperature=self.temperature,
-                                        max_tokens=self.max_tokens)
-        return ansv.choices[0]['text']
+        try:
+            ansv = openai.Completion.create(engine=self.engine, prompt=ask,
+                                            temperature=self.temperature,
+                                            max_tokens=self.max_tokens)
+            return ansv.choices[0]['text']
+        except: return 'GptErr!'
 

@@ -267,23 +267,26 @@ class ChatBot:
     def say(self, message): #  отправка ответа на распространенные вопросы
         mess = message.text.lower() 
         if not mess.startswith('/'):
+            answ = self.gpt.answer(message.text)
+            if answ.startswith('GptErr!'):
+                for i in self.chat_quest['say_hwy_list']:
+                    if mess.startswith(i):
+                        self.bot.send_message(message.chat.id, self.rand_ansv(self.chat_answ['mas_del']))
+                        return
+                for i in self.chat_quest['say_hi_list']:
+                    if mess.startswith(i):
+                        self.bot.send_message(message.chat.id, self.rand_ansv(self.chat_answ['mas_hello']))
+                        return
+                for i in self.chat_quest['say_nst_list']:
+                    if mess.startswith(i):
+                        self.bot.send_message(message.chat.id, self.rand_ansv(self.chat_answ['mas_nastr']))
+                        return
+                    else:
+                        self.bot.reply_to(message, self.chat_answ['mas_noUnd'])
+                        return
             self.bot.send_message(message.chat.id, self.gpt.answer(message.text))
             return 
-        # for i in self.chat_quest['say_hwy_list']:
-        #     if mess.startswith(i):
-        #         self.bot.send_message(message.chat.id, self.rand_ansv(self.chat_answ['mas_del']))
-        #         return
-        # for i in self.chat_quest['say_hi_list']:
-        #     if mess.startswith(i):
-        #         self.bot.send_message(message.chat.id, self.rand_ansv(self.chat_answ['mas_hello']))
-        #         return
-        # for i in self.chat_quest['say_nst_list']:
-        #     if mess.startswith(i):
-        #         self.bot.send_message(message.chat.id, self.rand_ansv(self.chat_answ['mas_nastr']))
-        #         return
-        #     else:
-        #         self.bot.reply_to(message, self.chat_answ['mas_noUnd'])
-        #         return
+
             
     def del_last_msg(self, message): #  Удаление последнего сообщения
         self.bot.delete_message(message.chat.id, message.message_id)
