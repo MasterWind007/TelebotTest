@@ -3,7 +3,7 @@ import cv2
 
 class BarCode:
     def __init__(self):
-        self.decoded = []
+        self.decoded = [] 
 
     def img_from_file(self, fname):    # Возвращает объект image из файла с картинкой
         '''

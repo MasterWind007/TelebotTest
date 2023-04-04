@@ -261,7 +261,7 @@ class ChatBot:
         self.bot.send_message(message.chat.id, text = text)
 
 
-    def ocr_to_str(self,message):
+    def ocr_to_str(self,message): 
         self.ocr.img_from_file(self.ocr_image_file)
         txt = self.ocr.image_to_string()
         self.bot.send_message(message.chat.id, text=txt)

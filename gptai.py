@@ -9,7 +9,7 @@ class GptChat:
 
     def get_key(self, file = f'Comon\Res\gpt_Key'):
         with open(file) as key:  
-            ip_key = key.read() 
+            ip_key = key.read()  
         openai.api_key = ip_key
 
     def set_engine(self, eng):
