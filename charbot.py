@@ -264,7 +264,7 @@ class ChatBot:
         self.bot.send_message(message.chat.id, text=txt)
         
 
-    def say(self, message): #  отправка ответа на распространенные вопросы
+    def say(self, message): #     отправка ответа на распространенные вопросы
         mess = message.text.lower() 
         if not mess.startswith('/'):
             answ = self.gpt.answer(message.text)
