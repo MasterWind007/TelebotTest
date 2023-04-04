@@ -5,7 +5,7 @@ import ocrmodule
 from io import BytesIO
 import os
 from barcode import BarCode
-import cv2
+from gptai import GptChat 
 
 class ChatBot:
     def __init__(self, bt):
@@ -19,6 +19,9 @@ class ChatBot:
         self.bot = tb.TeleBot(bt)
         self.ocr= ocrmodule.OcrClass(self.ocr_image_file, OCR_EXE_PATH)
         self.barcode = BarCode()
+        self.gpt = GptChat()
+        self.gpt.get_key()
+
         self.chat_answ     = {'mas_hello' :['Привет.', 'День добрый!', 'Добрый день!', 'Здравствуй!', 'Доброго дня!'],
                               'mas_del'   :['Заебок','Норм', 'Пойдет', 'Хорошо', 'Отлично', 'Лучше не бывает!', 'Лучше всех!', 'Как обычно'],
                               'mas_nastr' :['Прекрасное!', 'Замечательное!', 'Рабочее...', 'Вполне сносное...'],
@@ -262,25 +265,27 @@ class ChatBot:
         self.ocr.img_from_file(self.ocr_image_file)
         txt = self.ocr.image_to_string()
         self.bot.send_message(message.chat.id, text=txt)
-        
 
     def say(self, message): #  отправка ответа на распространенные вопросы
-        mess = message.text.lower() 
-        for i in self.chat_quest['say_hwy_list']:
-            if mess.startswith(i):
-                self.bot.send_message(message.chat.id, self.rand_ansv(self.chat_answ['mas_del']))
-                return
-        for i in self.chat_quest['say_hi_list']:
-            if mess.startswith(i):
-                self.bot.send_message(message.chat.id, self.rand_ansv(self.chat_answ['mas_hello']))
-                return
-        for i in self.chat_quest['say_nst_list']:
-            if mess.startswith(i):
-                self.bot.send_message(message.chat.id, self.rand_ansv(self.chat_answ['mas_nastr']))
-                return
-            else:
-                self.bot.reply_to(message, self.chat_answ['mas_noUnd'])
-                return
+        mess = message.text.lower()
+        if not mess.startswith('/'):
+            ansv = self.gpt.answer(mess)            
+            self.bot.send_message(message.chat.id, ansv)
+        # for i in self.chat_quest['say_hwy_list']:
+        #     if mess.startswith(i):
+        #         self.bot.send_message(message.chat.id, self.rand_ansv(self.chat_answ['mas_del']))
+        #         return
+        # for i in self.chat_quest['say_hi_list']:
+        #     if mess.startswith(i):
+        #         self.bot.send_message(message.chat.id, self.rand_ansv(self.chat_answ['mas_hello']))
+        #         return
+        # for i in self.chat_quest['say_nst_list']:
+        #     if mess.startswith(i):
+        #         self.bot.send_message(message.chat.id, self.rand_ansv(self.chat_answ['mas_nastr']))
+        #         return
+        #     else:
+        #         self.bot.reply_to(message, self.chat_answ['mas_noUnd'])
+        #         return
             
     def del_last_msg(self, message): #  Удаление последнего сообщения
         self.bot.delete_message(message.chat.id, message.message_id)
