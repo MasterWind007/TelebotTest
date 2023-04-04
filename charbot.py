@@ -5,23 +5,19 @@ import ocrmodule
 from io import BytesIO
 import os
 from barcode import BarCode
-from gptai import GptChat 
+import cv2
 
 class ChatBot:
     def __init__(self, bt):
-        OCR_EXE_PATH = ['C:\\Program Files\\Tesseract-OCR\\tesseract.exe', 
-                        'D:\\Program Files\\Tesseract-OCR\\tesseract.exe']
         self.auth = False
         self.is_ocrmode = False
         self.is_barmode = False
         self.ocr_image_file = r'Comon\Tmp\ocrimg.jpg'
         self.bar_image_file = r'Comon\Tmp\barcode.jpg' 
         self.bot = tb.TeleBot(bt)
-        self.ocr= ocrmodule.OcrClass(self.ocr_image_file, OCR_EXE_PATH)
+        self.ocr= ocrmodule.OcrClass(self.ocr_image_file)
+        self.ocr.set_tesseract_path('D:\\Program Files\\Tesseract-OCR\\tesseract.exe')
         self.barcode = BarCode()
-        self.gpt = GptChat()
-        self.gpt.get_key()
-
         self.chat_answ     = {'mas_hello' :['Привет.', 'День добрый!', 'Добрый день!', 'Здравствуй!', 'Доброго дня!'],
                               'mas_del'   :['Заебок','Норм', 'Пойдет', 'Хорошо', 'Отлично', 'Лучше не бывает!', 'Лучше всех!', 'Как обычно'],
                               'mas_nastr' :['Прекрасное!', 'Замечательное!', 'Рабочее...', 'Вполне сносное...'],
@@ -87,7 +83,7 @@ class ChatBot:
                 sent = self.bot.send_message(message.chat.id, 'Неправильный пароль! Прпробуйте еще раз.')
                 self.bot.register_next_step_handler(sent, self.login)
  
-    def build_menu(self, buttons, n_cols,  header_buttons=None, footer_buttons=None): #сборка инлайн клавиатуры главного меню (спизженно скакого то форума)
+    def build_menu(self, buttons, n_cols,  header_buttons=None, footer_buttons=None): #сборка инлайн клавиатуры главного меню
         menu = [buttons[i:i + n_cols] for i in range(0, len(buttons), n_cols)]
         if header_buttons:
             menu.insert(0, [header_buttons])
@@ -99,10 +95,6 @@ class ChatBot:
         self.bot.set_my_commands(self.main_cmd)
 
     def list_dir (self, dir, ext=''): # получает список файлов с указанным расширением из указаной папки 
-        '''
-        dir -  папка сканирования
-        ext -  маска по расширанию файлов (по умолчанию все файлы)
-        '''
         content = os.listdir(dir)
         f_list = []
         for file in content:
@@ -254,10 +246,12 @@ class ChatBot:
         text  = ''
         path = self.bar_image_file
         img = self.barcode.img_from_file(path)
-        img = self.barcode.draw_rect_bars(img)
+        # img = self.barcode.draw_rect_bars(img)
         for item in self.barcode.decoded:
             text += str(item.data,'utf-8') +'\n'
         # self.bot.send_photo(message.chat.id, img , caption= text)
+        if text == '':
+            self.bot.send_message(message.chat.id, text = 'К сожалению не удалось распознать изображение.')
         self.bot.send_message(message.chat.id, text = text)
 
 
@@ -265,27 +259,25 @@ class ChatBot:
         self.ocr.img_from_file(self.ocr_image_file)
         txt = self.ocr.image_to_string()
         self.bot.send_message(message.chat.id, text=txt)
+        
 
     def say(self, message): #  отправка ответа на распространенные вопросы
-        mess = message.text.lower()
-        if not mess.startswith('/'):
-            ansv = self.gpt.answer(mess)            
-            self.bot.send_message(message.chat.id, ansv)
-        # for i in self.chat_quest['say_hwy_list']:
-        #     if mess.startswith(i):
-        #         self.bot.send_message(message.chat.id, self.rand_ansv(self.chat_answ['mas_del']))
-        #         return
-        # for i in self.chat_quest['say_hi_list']:
-        #     if mess.startswith(i):
-        #         self.bot.send_message(message.chat.id, self.rand_ansv(self.chat_answ['mas_hello']))
-        #         return
-        # for i in self.chat_quest['say_nst_list']:
-        #     if mess.startswith(i):
-        #         self.bot.send_message(message.chat.id, self.rand_ansv(self.chat_answ['mas_nastr']))
-        #         return
-        #     else:
-        #         self.bot.reply_to(message, self.chat_answ['mas_noUnd'])
-        #         return
+        mess = message.text.lower() 
+        for i in self.chat_quest['say_hwy_list']:
+            if mess.startswith(i):
+                self.bot.send_message(message.chat.id, self.rand_ansv(self.chat_answ['mas_del']))
+                return
+        for i in self.chat_quest['say_hi_list']:
+            if mess.startswith(i):
+                self.bot.send_message(message.chat.id, self.rand_ansv(self.chat_answ['mas_hello']))
+                return
+        for i in self.chat_quest['say_nst_list']:
+            if mess.startswith(i):
+                self.bot.send_message(message.chat.id, self.rand_ansv(self.chat_answ['mas_nastr']))
+                return
+            else:
+                self.bot.reply_to(message, self.chat_answ['mas_noUnd'])
+                return
             
     def del_last_msg(self, message): #  Удаление последнего сообщения
         self.bot.delete_message(message.chat.id, message.message_id)

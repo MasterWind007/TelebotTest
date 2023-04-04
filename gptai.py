@@ -4,7 +4,7 @@ class GptChat:
     def __init__(self, key=''):
         openai.api_key = key
         self.engine = "text-davinci-003"
-        self.temperature = 0.5
+        self.temperature = 0.8
         self.max_tokens=1000
 
     def get_key(self, file = f'Comon\Res\gpt_Key'):
