@@ -9,14 +9,15 @@ import cv2
 
 class ChatBot:
     def __init__(self, bt):
+        OCR_EXE_PATH = ['C:\\Program Files\\Tesseract-OCR\\tesseract.exe', 
+                        'D:\\Program Files\\Tesseract-OCR\\tesseract.exe']
         self.auth = False
         self.is_ocrmode = False
         self.is_barmode = False
         self.ocr_image_file = r'Comon\Tmp\ocrimg.jpg'
         self.bar_image_file = r'Comon\Tmp\barcode.jpg' 
         self.bot = tb.TeleBot(bt)
-        self.ocr= ocrmodule.OcrClass(self.ocr_image_file)
-        self.ocr.set_tesseract_path('C:\\Program Files\\Tesseract-OCR\\tesseract.exe')
+        self.ocr= ocrmodule.OcrClass(self.ocr_image_file, OCR_EXE_PATH)
         self.barcode = BarCode()
         self.chat_answ     = {'mas_hello' :['Привет.', 'День добрый!', 'Добрый день!', 'Здравствуй!', 'Доброго дня!'],
                               'mas_del'   :['Заебок','Норм', 'Пойдет', 'Хорошо', 'Отлично', 'Лучше не бывает!', 'Лучше всех!', 'Как обычно'],

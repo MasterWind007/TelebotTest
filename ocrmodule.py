@@ -2,10 +2,11 @@ import pytesseract
 from pytesseract import pytesseract as Pt
 import cv2
 
+
 class OcrClass:
-    def __init__(self, file_path):
-        self.teceract_exe_path = file_path
-        Pt.tesseract_cmd = self.teceract_exe_path
+    def __init__(self, file_path , exe_path):
+        self.teceract_exe_path = exe_path 
+        Pt.tesseract_cmd = self.teceract_exe_path[0]
         self.img = cv2.imread(file_path)
         self.img_copy = None
         self.t_conf = u"--psm 12"
@@ -30,14 +31,17 @@ class OcrClass:
         """
 
     def  set_tesseract_path(self, path):
-        self.teceract_exe_path = path
-        Pt.tesseract_cmd = self.teceract_exe_path
+        Pt.tesseract_cmd = path
         
     def img_from_file(self, file_path):
         self.img = cv2.imread(file_path)
 
     def image_to_string(self):
-        return Pt.image_to_string(self.img, lang ='rus+eng', config = self.t_conf)
+        try:
+            return Pt.image_to_string(self.img, lang ='rus+eng', config = self.t_conf)
+        except: 
+           self.set_tesseract_path(self.teceract_exe_path[1])
+           return Pt.image_to_string(self.img, lang ='rus+eng', config = self.t_conf)
  
     def image_to_data(self):
         return Pt.image_to_data(self.img, lang='rus+eng', output_type=Pt.Output.DICT)
