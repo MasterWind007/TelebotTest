@@ -12,7 +12,10 @@ ocr_exe_file = ['C:\\Program Files\\Tesseract-OCR\\tesseract.exe',
 ocr_image_file = r'Comon\Tmp\ocrimg.jpg'
 bar_image_file = r'Comon\Tmp\barcode.jpg' 
 
-ocr = ocrmodule.OcrClass(ocr_exe_file[0])
+ocr = ocrmodule.OcrClass(ocr_exe_file[0]) # Инициализация объекта для распознавания текста
+gpt = GptChat() #Инициализация объекта работы с GPT4 чат
+gpt.get_key()
+barcode = BarCode() # Инициализация объекта для работы с штрих и QR кодами
 
 class ChatBot:
     def __init__(self, bt):
@@ -22,9 +25,6 @@ class ChatBot:
         self.ocr_image_file = ocr_image_file
         self.bar_image_file = bar_image_file 
         self.bot = tb.TeleBot(bt)
-        self.barcode = BarCode()
-        self.gpt = GptChat()
-        self.gpt.get_key()
 
         self.chat_answ     = {'mas_hello' :['Привет.', 'День добрый!', 'Добрый день!', 'Здравствуй!', 'Доброго дня!'],
                               'mas_del'   :['Заебок','Норм', 'Пойдет', 'Хорошо', 'Отлично', 'Лучше не бывает!', 'Лучше всех!', 'Как обычно'],
@@ -253,9 +253,9 @@ class ChatBot:
     def bar_to_str(self, message):
         text  = ''
         path = self.bar_image_file
-        img = self.barcode.img_from_file(path)
-        # img = self.barcode.draw_rect_bars(img)
-        for item in self.barcode.decoded:
+        img = barcode.img_from_file(path)
+        # img = barcode.draw_rect_bars(img)
+        for item in barcode.decoded:
             text += str(item.data,'utf-8') +'\n'
         # self.bot.send_photo(message.chat.id, img , caption= text)
         if text == '':
@@ -271,7 +271,7 @@ class ChatBot:
     def say(self, message): #     отправка ответа на распространенные вопросы
         mess = message.text.lower() 
         if not mess.startswith('/'):
-            answ = self.gpt.answer(message.text)
+            answ = gpt.answer(message.text)
             if answ.startswith('GptErr!'):
                 for i in self.chat_quest['say_hwy_list']:
                     if mess.startswith(i):
@@ -288,7 +288,7 @@ class ChatBot:
                     else:
                         self.bot.reply_to(message, self.chat_answ['mas_noUnd'])
                         return
-            self.bot.send_message(message.chat.id, self.gpt.answer(message.text))
+            self.bot.send_message(message.chat.id, gpt.answer(message.text))
             return 
 
             
