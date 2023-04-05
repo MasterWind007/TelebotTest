@@ -7,16 +7,21 @@ import os
 from barcode import BarCode
 from gptai import GptChat
 
+ocr_exe_file = ['C:\\Program Files\\Tesseract-OCR\\tesseract.exe',
+                'D:\\Program Files\\Tesseract-OCR\\tesseract.exe']
+ocr_image_file = r'Comon\Tmp\ocrimg.jpg'
+bar_image_file = r'Comon\Tmp\barcode.jpg' 
+
+ocr = ocrmodule.OcrClass(ocr_exe_file[0])
+
 class ChatBot:
     def __init__(self, bt):
         self.auth = False
         self.is_ocrmode = False
         self.is_barmode = False
-        self.ocr_image_file = r'Comon\Tmp\ocrimg.jpg'
-        self.bar_image_file = r'Comon\Tmp\barcode.jpg' 
+        self.ocr_image_file = ocr_image_file
+        self.bar_image_file = bar_image_file 
         self.bot = tb.TeleBot(bt)
-        self.ocr= ocrmodule.OcrClass(self.ocr_image_file)
-        self.ocr.set_tesseract_path('D:\\Program Files\\Tesseract-OCR\\tesseract.exe')
         self.barcode = BarCode()
         self.gpt = GptChat()
         self.gpt.get_key()
@@ -259,8 +264,7 @@ class ChatBot:
 
 
     def ocr_to_str(self,message): 
-        self.ocr.img_from_file(self.ocr_image_file)
-        txt = self.ocr.image_to_string()
+        txt = ocr.image_to_string(self.ocr_image_file)
         self.bot.send_message(message.chat.id, text=txt)
         
 
