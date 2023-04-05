@@ -255,7 +255,7 @@ class ChatBot:
         path = self.bar_image_file
         img = barcode.img_from_file(path)
         # img = barcode.draw_rect_bars(img)
-        for item in barcode.decoded:
+        for item in barcode.decode(img):
             text += str(item.data,'utf-8') +'\n'
         # self.bot.send_photo(message.chat.id, img , caption= text)
         if text == '':
