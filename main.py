@@ -5,7 +5,6 @@ import pathlib
 key_path = pathlib.Path('Comon','Res', 'Key')
 with open(key_path) as key:  
     tb_key = key.read() # тут должен быть ключ, но  я его не дам )))
-
 chat = cb.ChatBot(tb_key)
 
 
