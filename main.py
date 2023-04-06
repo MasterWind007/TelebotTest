@@ -26,6 +26,8 @@ def exec(message):
         elif message.text=='/url'     : chat.url(message)      # Выдача ссылки
         elif message.text=='/ocr'     : chat.ocr_mode_on(message)
         elif message.text=='/bar'     : chat.bar_mode_on(message)
+        elif message.text=='/gkey'     : chat.gptk_mode_on(message)
+        
         else  : chat.say(message)      # Анализ и обработака текстовых сообщений
     else: 
         chat.bot.send_message(message.chat.id, chat.rand_ansv(chat.chat_logon['acc_no']))         

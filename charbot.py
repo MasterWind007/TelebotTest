@@ -33,6 +33,7 @@ class ChatBot:
         self.auth = False
         self.is_ocrmode = False
         self.is_barmode = False
+        self.is_gpt_keymode = False
         self.ocr_image_file = ocr_image_file
         self.bar_image_file = bar_image_file 
         self.bot = tb.TeleBot(bt)
@@ -219,6 +220,16 @@ class ChatBot:
                 self.bar_to_str(message)
                 self.is_barmode = False
                 return
+            elif self.is_gpt_keymode == True:
+                if gpt.new_key(key=message.text)
+                    self.is_gpt_keymode = False
+                    self.del_last_msg(message)
+                    self.bot.send_message(chat_id=message.chat.id, text='Ок')
+                    return
+                else:
+                    self.is_gpt_keymode = False
+                    self.del_last_msg(message)
+                    self.bot.send_message(chat_id=message.chat.id, text='Ошибка!')
             else:
                 file_info = self.bot.get_file(message.photo[len(message.photo) - 1].file_id)
                 Path(f'Users/{message.from_user.first_name}_{message.from_user.last_name}/Pix/').mkdir(parents=True, exist_ok=True)
@@ -255,12 +266,13 @@ class ChatBot:
         self.bot.send_message(message.chat.id, text='Ожидаю фото или картинку с текстом.')
 
 
-    def ocr_mode_off(self):
-        self.is_ocrmode = False
-
     def bar_mode_on(self, message):
         self.is_barmode = True 
-        self.bot.send_message(message.chat.id, text='Ожидаю фото или картинку с баркодом.')        
+        self.bot.send_message(message.chat.id, text='Ожидаю фото или картинку с баркодом.')
+    
+    def gptk_mode_on(self, message):
+          self.is_gpt_keymode = True
+          self.bot.send_message(message.chat.id, text='Ожидаю ввода API Key...')          
     
     def bar_to_str(self, message):
         text  = ''
@@ -273,6 +285,15 @@ class ChatBot:
         if text == '':
             self.bot.send_message(message.chat.id, text = 'К сожалению не удалось распознать изображение.')
         self.bot.send_message(message.chat.id, text = text)
+
+
+        def gpt_key_upd(self, message):
+            if self.is_gpt_keymode == True:
+                pass
+
+            
+
+
 
 
     def ocr_to_str(self,message): 
