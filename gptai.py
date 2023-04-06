@@ -8,11 +8,19 @@ class GptChat:
         self.max_tokens=1000
 
     def get_key(self, file = f'Comon\Res\gpt_Key'):
+        '''
+        Читает ключ из файла
+        file - полный путь к файлу м ключем
+        '''
         with open(file) as key:  
             ip_key = key.read()  
         openai.api_key = ip_key
 
     def set_engine(self, eng):
+        '''
+        Устанавливает движок для чата
+        eng - имя движка например: "text-davinci-003"
+        '''
         self.engine = eng
 
     def set_temperature(self, temp):

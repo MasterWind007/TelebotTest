@@ -1,8 +1,9 @@
 #import argparse
 import charbot as cb
+import pathlib
 
-
-with open(f'Comon\Res\Key') as key:  
+key_path = pathlib.Path('Comon','Res', 'Key')
+with open(key_path) as key:  
     tb_key = key.read() # тут должен быть ключ, но  я его не дам )))
 
 chat = cb.ChatBot(tb_key)

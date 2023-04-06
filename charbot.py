@@ -6,11 +6,12 @@ from io import BytesIO
 import os
 from barcode import BarCode
 from gptai import GptChat
+import pathlib
+ocr_exe_file = [pathlib.Path('C:/','Program Files','Tesseract-OCR','tesseract.exe'),
+                pathlib.Path('D:/','Program Files','Tesseract-OCR','tesseract.exe')]
 
-ocr_exe_file = ['C:\\Program Files\\Tesseract-OCR\\tesseract.exe',
-                'D:\\Program Files\\Tesseract-OCR\\tesseract.exe']
-ocr_image_file = r'Comon\Tmp\ocrimg.jpg'
-bar_image_file = r'Comon\Tmp\barcode.jpg' 
+ocr_image_file = pathlib.Path('Comon','Tmp','ocrimg.jpg')
+bar_image_file = pathlib.Path('Comon','Tmp','barcode.jpg') 
 
 ocr = ocrmodule.OcrClass(ocr_exe_file[0]) # Инициализация объекта для распознавания текста
 gpt = GptChat() #Инициализация объекта работы с GPT4 чат
