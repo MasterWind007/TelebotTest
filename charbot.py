@@ -221,7 +221,7 @@ class ChatBot:
                 self.is_barmode = False
                 return
             elif self.is_gpt_keymode == True:
-                if gpt.new_key(key=message.text)
+                if gpt.new_key(key=message.text):
                     self.is_gpt_keymode = False
                     self.del_last_msg(message)
                     self.bot.send_message(chat_id=message.chat.id, text='Ок')
