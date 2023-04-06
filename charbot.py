@@ -139,7 +139,7 @@ class ChatBot:
         #     pix_content += file_nm+'\n'
         # pix_content+= '</b>'    
         txt='Список твоих картинок, как просил:'
-        with open(Path(f'{self.com_res_path["pix"]}\M1.png'), 'rb') as img:
+        with open(Path(self.com_res_path["pix"],'M1.png'), 'rb') as img:
             self.bot.send_photo(message.chat.id, img, caption=txt ,reply_markup=reply_markup, parse_mode='HTML' )
         
     def my_doclist(self, message): # Отправка списка документов пользователя в виде кнопок
@@ -151,7 +151,7 @@ class ChatBot:
         btn_list.append(types.InlineKeyboardButton("Меню. 📖", callback_data='menu'))
         reply_markup = types.InlineKeyboardMarkup(self.build_menu(btn_list, n_cols=1),row_width=1)
         txt='Список твоих документов, как просил:'
-        with open(Path(f'{self.com_res_path["pix"]}\M1.png'), 'rb') as img:
+        with open(Path(self.com_res_path["pix"],'M1.png'), 'rb') as img:
             self.bot.send_photo(message.chat.id, img, caption=txt ,reply_markup=reply_markup, parse_mode='HTML' )
 
     def sendpix(self, message, fname): # отправить картинку в чат
@@ -185,8 +185,8 @@ class ChatBot:
 Мой функционал со временем будет расширяться,\n\
 обрастая новыми возможностями.\n\
 Но пока, что мы имеем, то и имеем\n\n\
-Здесь список команд \r\nкоторые тебе доступны:'
-        with open(Path(f'{self.com_res_path["pix"]}\M4.png'), 'rb') as img:
+Здесь список команд \r\nкоторые тебе доступны:' 
+        with open(Path(self.com_res_path["pix"],'M4.png'), 'rb') as img:
             self.bot.send_photo(message.chat.id, img, caption=txt ,reply_markup=reply_markup, parse_mode='HTML' )
 
     def save_pix_file(self, message, path):
