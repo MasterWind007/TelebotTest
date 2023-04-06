@@ -31,8 +31,12 @@ class GptChat:
         key - Ключ
         '''    
         with open(file, 'w') as fil:
-            fil.write(key)
+            try:
+                fil.write(key)
+                return True
+            except: return False
             
+
 
     def set_temperature(self, temp):
         self.temperature = temp
