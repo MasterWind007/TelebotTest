@@ -10,7 +10,7 @@ class BarCode:
         fname -  имя файла из которого получаем образ;
         возращает cv2 image
         '''
-        img = cv2.imread(fname)
+        img = cv2.imread(str(fname))
         return img
     
     def img_to_file(self, fname, img):

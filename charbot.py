@@ -6,12 +6,22 @@ from io import BytesIO
 import os
 from barcode import BarCode
 from gptai import GptChat
-import pathlib
-ocr_exe_file = [pathlib.Path('C:/','Program Files','Tesseract-OCR','tesseract.exe'),
-                pathlib.Path('D:/','Program Files','Tesseract-OCR','tesseract.exe')]
+from pathlib import Path
 
-ocr_image_file = pathlib.Path('Comon','Tmp','ocrimg.jpg')
-bar_image_file = pathlib.Path('Comon','Tmp','barcode.jpg') 
+ocr_exe_file = [Path('C:/','Program Files','Tesseract-OCR','tesseract.exe'),
+                Path('D:/','Program Files','Tesseract-OCR','tesseract.exe')]
+ocr_image_file = Path('Comon','Tmp','ocrimg.jpg')
+bar_image_file = Path('Comon','Tmp','barcode.jpg')
+com_res_path ={'audio': Path('Comon','Res','Audio'), 
+               'docs': Path('Comon','Res','Docs'), 
+               'pix': Path('Comon','Res','Pix'),
+               'video': Path('Comon','Res','Video')}
+tmp_path =    {'audio' : Path('Comon','Tmp','Audio'),
+               'docs': Path('Comon','Tmp','Docs'),
+               'pix': Path('Comon','Tmp','Pix'),
+               'video': Path('Comon','Tmp','Video')} 
+usr_root_path = Path('Users')
+usr_part_path = {'audio':'Audio','docs':'Docs','pix':'Pix','video':'Video'} 
 
 ocr = ocrmodule.OcrClass(ocr_exe_file[0]) # Инициализация объекта для распознавания текста
 gpt = GptChat() #Инициализация объекта работы с GPT4 чат
@@ -26,6 +36,11 @@ class ChatBot:
         self.ocr_image_file = ocr_image_file
         self.bar_image_file = bar_image_file 
         self.bot = tb.TeleBot(bt)
+
+        self.com_res_path   = com_res_path # Пути к общим папкам ресурсов
+        self.tmp_path       = tmp_path #Пути к временным папкам документов
+        self.usr_root_path  = usr_root_path
+        self.usr_part_path  = usr_part_path # Путь к папкам пользователя
 
         self.chat_answ     = {'mas_hello' :['Привет.', 'День добрый!', 'Добрый день!', 'Здравствуй!', 'Доброго дня!'],
                               'mas_del'   :['Заебок','Норм', 'Пойдет', 'Хорошо', 'Отлично', 'Лучше не бывает!', 'Лучше всех!', 'Как обычно'],
@@ -44,10 +59,6 @@ class ChatBot:
                               }
 
         self.main_cmd       = [types.BotCommand("start", "Запуск Бота"), types.BotCommand("menu", "Вызов меню")] # Элементы меню команд.
-        self.com_res_path   = {'audio':'Comon/Res/Audio/', 'docs':'Comon/Res/Docs/', 'pix':'Comon/Res/Pix/', 'video':'Comon/Res/Video/'} # Пути к общим папкам ресурсов
-        self.tmp_path       = {'audio':'Comon/temp/Audio/', 'docs':'Comon/temp/Docs/', 'pix':'Comon/temp/Pix/', 'video':'Comon/temp/Video/'} #Пути к временным папкам документов
-        self.usr_root_path  = 'Users/'
-        self.usr_part_path  = {'audio':'/Audio/','docs':'/Docs/','pix':'/Pix/','video':'/Video/'} # Путь к папкам пользователя
         self.main_btns      = {}
         self.inln_btns      = {'main_btns':[types.InlineKeyboardButton("Вызов меню 📖", callback_data='menu'), # Элементы кнопок инлайн клавиатур
                                 types.InlineKeyboardButton("Мои документы 📄", callback_data='mydoclist'),
@@ -127,7 +138,7 @@ class ChatBot:
         #     pix_content += file_nm+'\n'
         # pix_content+= '</b>'    
         txt='Список твоих картинок, как просил:'
-        with open(f'{self.com_res_path["pix"]}M1.png', 'rb') as img:
+        with open(Path(f'{self.com_res_path["pix"]}\M1.png'), 'rb') as img:
             self.bot.send_photo(message.chat.id, img, caption=txt ,reply_markup=reply_markup, parse_mode='HTML' )
         
     def my_doclist(self, message): # Отправка списка документов пользователя в виде кнопок
@@ -139,15 +150,15 @@ class ChatBot:
         btn_list.append(types.InlineKeyboardButton("Меню. 📖", callback_data='menu'))
         reply_markup = types.InlineKeyboardMarkup(self.build_menu(btn_list, n_cols=1),row_width=1)
         txt='Список твоих документов, как просил:'
-        with open(f'{self.com_res_path["pix"]}M1.png', 'rb') as img:
+        with open(Path(f'{self.com_res_path["pix"]}\M1.png'), 'rb') as img:
             self.bot.send_photo(message.chat.id, img, caption=txt ,reply_markup=reply_markup, parse_mode='HTML' )
 
     def sendpix(self, message, fname): # отправить картинку в чат
         btn_list = []
         btn_list.append(types.InlineKeyboardButton("Меню. 📖", callback_data='menu'))
         reply_markup = types.InlineKeyboardMarkup(self.build_menu(btn_list, n_cols=1),row_width=1)
-        path = f'Users/{message.chat.first_name}_{message.chat.last_name}/Pix/'
-        path+=fname
+        path = Path(f'Users/{message.chat.first_name}_{message.chat.last_name}/Pix/')
+        path = Path(path,fname)
         with open(path, 'rb') as img:
             self.bot.send_photo(message.chat.id, img, caption=self.rand_ansv(self.chat_answ['mas_sendf']),reply_markup=reply_markup)
 
@@ -174,7 +185,7 @@ class ChatBot:
 обрастая новыми возможностями.\n\
 Но пока, что мы имеем, то и имеем\n\n\
 Здесь список команд \r\nкоторые тебе доступны:'
-        with open(f'{self.com_res_path["pix"]}M4.png', 'rb') as img:
+        with open(Path(f'{self.com_res_path["pix"]}\M4.png'), 'rb') as img:
             self.bot.send_photo(message.chat.id, img, caption=txt ,reply_markup=reply_markup, parse_mode='HTML' )
 
     def save_pix_file(self, message, path):
@@ -194,7 +205,6 @@ class ChatBot:
             self.bot.send_message(chat_id=message.chat.id, text='...документ сохранил!')                      
 
     def handler_file(self, message): # Обработчик файлов , присланых пользователем в чат
-        from pathlib import Path
         if message.content_type == 'photo':
             if self.is_ocrmode == True:
                 path = self.ocr_image_file
@@ -212,10 +222,11 @@ class ChatBot:
             else:
                 file_info = self.bot.get_file(message.photo[len(message.photo) - 1].file_id)
                 Path(f'Users/{message.from_user.first_name}_{message.from_user.last_name}/Pix/').mkdir(parents=True, exist_ok=True)
-                path = f'Users/{message.from_user.first_name}_{message.from_user.last_name}/Pix/{message.chat.id}_' + file_info.file_path.replace('photos/', '')
+                path = Path(f'Users/{message.from_user.first_name}_{message.from_user.last_name}/Pix/{message.chat.id}_' + file_info.file_path.replace('photos/', ''))
+                self.save_pix_file(message, path)
         elif message.content_type == 'document':
             Path(f'Users/{message.from_user.first_name}_{message.from_user.last_name}/Docs/').mkdir(parents=True, exist_ok=True)
-            path = f'Users/{message.from_user.first_name}_{message.from_user.last_name}/Docs/' + message.document.file_name
+            path = Path(f'Users/{message.from_user.first_name}_{message.from_user.last_name}/Docs/' + message.document.file_name)
             self.save_doc_file(self, message, path)
 
 

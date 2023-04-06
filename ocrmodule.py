@@ -44,7 +44,7 @@ class OcrClass:
         Возвращает текст распознаный на картинке
         file_path - Путь к файлу с картинкой
         '''
-        img = cv2.imread(file_path)
+        img = cv2.imread(str(file_path))
         return Pt.image_to_string(img, lang ='rus+eng', config = self.t_conf)
  
     def image_to_data(self, file_path):
