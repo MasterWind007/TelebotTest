@@ -62,9 +62,9 @@ class ChatBot:
         self.main_cmd       = [types.BotCommand("start", "Запуск Бота"), types.BotCommand("menu", "Вызов меню")] # Элементы меню команд.
         self.main_btns      = {}
         self.inln_btns      = {'main_btns':[types.InlineKeyboardButton("Вызов меню 📖", callback_data='menu'), # Элементы кнопок инлайн клавиатур
-                                types.InlineKeyboardButton("Мои документы 📄", callback_data='mydoclist'),
-                                types.InlineKeyboardButton("Мои картинки 🏞", callback_data='mypixlist'),
-                                types.InlineKeyboardButton("Распознать текст 🏞", callback_data='myocr'),
+                                # types.InlineKeyboardButton("Мои документы 📄", callback_data='mydoclist'),
+                                # types.InlineKeyboardButton("Мои картинки 🏞", callback_data='mypixlist'),
+                                # types.InlineKeyboardButton("Распознать текст 🏞", callback_data='myocr'),
                                 types.InlineKeyboardButton("Распознать Баркод 🪪", callback_data='mybarcode'),
                                 types.InlineKeyboardButton(text='Наш сайт 🧻', web_app=types.WebAppInfo('https://ya.ru')),
                                 types.InlineKeyboardButton(text='Перейти в чат 🪠', switch_inline_query="Telegram")]
