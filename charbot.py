@@ -178,16 +178,16 @@ class ChatBot:
 
 
     def main_menu(self, message): # Обработчик команды /start
-        reply_markup = types.InlineKeyboardMarkup(self.build_menu(self.inln_btns['main_btns'], n_cols=2),row_width=1)
+        # reply_markup = types.InlineKeyboardMarkup(self.build_menu(self.inln_btns['main_btns'], n_cols=2),row_width=1)
         txt=f'Привет { message.from_user.first_name}!\r\n\r\n\
 Я учебный бот, на котором мой создатель\n\
 отрабатывает навыки написания мне подобных.\n\
 Мой функционал со временем будет расширяться,\n\
 обрастая новыми возможностями.\n\
-Но пока, что мы имеем, то и имеем\n\n\
-Здесь список команд \r\nкоторые тебе доступны:' 
+Спаисок доступных команд, можно вызвать \n\
+набрав /menu  или выбрав эту команду в меню чата.' 
         with open(Path(self.com_res_path["pix"],'M4.png'), 'rb') as img:
-            self.bot.send_photo(message.chat.id, img, caption=txt ,reply_markup=reply_markup, parse_mode='HTML' )
+            self.bot.send_photo(message.chat.id, img, caption=txt , parse_mode='HTML' )
 
     def save_pix_file(self, message, path):
             file_info = self.bot.get_file(message.photo[len(message.photo) - 1].file_id)
