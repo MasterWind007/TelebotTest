@@ -189,9 +189,7 @@ class ChatBot:
 
     def main_menu(self, message): # Обработчик команды /start
         reply_markup = types.InlineKeyboardMarkup(self.build_menu(self.inln_btns['main_btns'], n_cols=2),row_width=1)
-        txt='Список доступных команд:'
-        with open(Path(self.com_res_path["pix"],'M4.png'), 'rb') as img:
-            self.bot.send_message(message.chat.id, img, text=txt ,reply_markup=reply_markup, parse_mode='HTML' )
+        self.bot.send_message(chat_id=message.chat.id, text='Список доступных команд:', reply_markup=reply_markup)
 
     def save_pix_file(self, message, path):
             file_info = self.bot.get_file(message.photo[len(message.photo) - 1].file_id)
@@ -244,11 +242,6 @@ class ChatBot:
             path = Path(f'Users/{message.from_user.first_name}_{message.from_user.last_name}/Docs/' + message.document.file_name)
             self.save_doc_file(self, message, path)
 
-
-        def send_menu(self, message, menu): #создать меню
-            self.build_smenu() 
-            reply_markup = types.InlineKeyboardMarkup(self.build_menu(menu, n_cols=2),row_width=1)
-            self.bot.send_message(chat_id=message.chat.id, text='Список доступных команд:', reply_markup=reply_markup)
 
     def swchat(self, message): # Перейти в другой чат
         markup = types.InlineKeyboardMarkup()
