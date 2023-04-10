@@ -2,6 +2,8 @@ import pytesseract
 from pytesseract import pytesseract as Pt
 import cv2
 
+# sudo apt install tesseract-ocr tesseract-ocr-rus для Ubuntu
+
 class OcrClass:
     def __init__(self,  exe_path):
         '''
