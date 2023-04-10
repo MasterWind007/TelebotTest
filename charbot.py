@@ -96,7 +96,7 @@ class ChatBot:
             if message.text == 'Pass':
                 self.del_last_msg(message)
                 self.bot.send_message(message.chat.id, 'Вы успешно авторизованы!')
-                self.main_menu(message)
+                self.welcome(message)
                 self.auth = True
             else:
                 self.auth = False
@@ -176,9 +176,7 @@ class ChatBot:
             obj.name = fname
             self.bot.send_document(message.chat.id, document=obj, caption=self.rand_ansv(self.chat_answ['mas_sendf'],reply_markup=reply_markup))
 
-
-    def main_menu(self, message): # Обработчик команды /start
-        # reply_markup = types.InlineKeyboardMarkup(self.build_menu(self.inln_btns['main_btns'], n_cols=2),row_width=1)
+    def welcome(self, message): # Приветствие
         txt=f'Привет { message.from_user.first_name}!\r\n\r\n\
 Я учебный бот, на котором мой создатель\n\
 отрабатывает навыки написания мне подобных.\n\
@@ -188,6 +186,12 @@ class ChatBot:
 набрав /menu  или выбрав эту команду в меню чата.' 
         with open(Path(self.com_res_path["pix"],'M4.png'), 'rb') as img:
             self.bot.send_photo(message.chat.id, img, caption=txt , parse_mode='HTML' )
+
+    def main_menu(self, message): # Обработчик команды /start
+        reply_markup = types.InlineKeyboardMarkup(self.build_menu(self.inln_btns['main_btns'], n_cols=2),row_width=1)
+        txt='Список доступных команд:'
+        with open(Path(self.com_res_path["pix"],'M4.png'), 'rb') as img:
+            self.bot.send_message(message.chat.id, img, text=txt ,reply_markup=reply_markup, parse_mode='HTML' )
 
     def save_pix_file(self, message, path):
             file_info = self.bot.get_file(message.photo[len(message.photo) - 1].file_id)
