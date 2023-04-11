@@ -2,6 +2,46 @@ import base64
 import json
 import os
 import subprocess
+from abc import ABCMeta, abstractmethod, abstractproperty
+
+
+class OCRif():
+    __metaclass__ = ABCMeta
+
+    @abstractmethod
+    def init():
+        ...
+
+    @abstractmethod
+    def read_from_file():
+        ...
+
+    @abstractmethod
+    def image_to_data():
+        ...
+
+    @abstractmethod
+    def image_to_string():
+        ...
+
+class YandexOCRinit():
+    def __init(self, OAuth=''):
+        self.o_auth= OAuth
+        self.out = { #распознавание текста
+                        "folderId": folderid ,
+                        "analyze_specs": [{
+                           "content": outfile,
+                           "features": [{
+                                "type": "TEXT_DETECTION",
+                                "text_detection_config": {
+                                    "language_codes": ["*"]
+                                }
+                            }]
+                        }]
+                    }
+        
+
+
 
 def encode_file(file):
     with open(file, 'rb') as f:
