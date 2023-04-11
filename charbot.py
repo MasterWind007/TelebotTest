@@ -6,7 +6,9 @@ from io import BytesIO
 import os
 from barcode import BarCode
 from gptai import GptChat
+from yacloudviz import YandexOCR
 from pathlib import Path
+
 
 ocr_exe_file = [Path('C:/','Program Files','Tesseract-OCR','tesseract.exe'),
                 Path('D:/','Program Files','Tesseract-OCR','tesseract.exe')]
@@ -23,7 +25,8 @@ tmp_path =    {'audio' : Path('Comon','Tmp','Audio'),
 usr_root_path = Path('Users')
 usr_part_path = {'audio':'Audio','docs':'Docs','pix':'Pix','video':'Video'} 
 
-ocr = ocrmodule.OcrClass(ocr_exe_file[0]) # Инициализация объекта для распознавания текста
+ocr = YandexOCR()
+# ocr = ocrmodule.OcrClass(ocr_exe_file[0]) # Инициализация объекта для распознавания текста teseract
 gpt = GptChat() #Инициализация объекта работы с GPT4 чат
 gpt.get_key()
 barcode = BarCode() # Инициализация объекта для работы с штрих и QR кодами
@@ -295,13 +298,9 @@ class ChatBot:
             if self.is_gpt_keymode == True:
                 pass
 
-            
-
-
-
-
     def ocr_to_str(self,message): 
-        txt = ocr.image_to_string(self.ocr_image_file)
+        txt = ocr.image_to_string() #для яндекс
+        # txt = ocr.image_to_string(self.ocr_image_file) для tesseract
         self.bot.send_message(message.chat.id, text=txt)
         
 
