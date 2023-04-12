@@ -1,32 +1,22 @@
 import base64
 import json
 import os
-import subprocess
 from pathlib import Path
-
+from yaauth import YaKeys, YaSession
 
 
 class yaOCR():
-    def __init__(self, OAuth='', folder_id=''):
-        self.outfile=''
-        self.o_auth = OAuth
-        self.folder_id = folder_id
+    def __init__(self):
+        self.aim_key = ''
+        self.folder_id = ''
 
-    def get_aim(self, OAuth=''):
-        cloud_id = {"yandexPassportOauthToken": OAuth}
-        get_token = ''.join(("curl -X POST -H 'Content-Type: application/json' -d \"", str(cloud_id), "\" ",\
-                     "https://iam.api.cloud.yandex.net/iam/v1/tokens")) 
-        IAM_TOKEN = subprocess.check_output(get_token,  shell=True)
-        return str(IAM_TOKEN[16:-49])[2:-5]
-    
-    def encode_file(self, file):
+    def __encode_file(self, file):
         with open(file, 'rb') as f:
             file_content = f.read()
         return base64.b64encode(file_content).decode('utf-8')
     
-    def image_to_string(self, file_img =Path('Comon','Tmp','ocrimg.jpg')):
-        output_json = Path('Comon','Tmp','output.json')
-        outfile = self.encode_file(file_img)
+    def image_to_str(self, file_img =Path('Comon','Tmp','ocrimg.jpg')):
+        outfile = self.__encode_file(file_img)
         out = {     #распознавание текста
             "folderId": self.folder_id,
             "analyze_specs": [{
@@ -41,7 +31,7 @@ class yaOCR():
         }
         with open('body.json', 'w') as f:
             json.dump(out, f)
-        IAM_TOKEN = self.get_aim(self.o_auth)
+        IAM_TOKEN = self.aim_key
         crl = 'curl -X POST  -H "Content-Type: application/json" -H "Authorization: Bearer '+IAM_TOKEN+'" -d @body.json https://vision.api.cloud.yandex.net/vision/v1/batchAnalyze > output.json'
         export_req = ''.join(('export IAM_TOKEN=', IAM_TOKEN ))
         to_curl = ''.join(crl)
@@ -56,28 +46,17 @@ class yaOCR():
         return data
 
     
-class YaKeys():
-    def __init__(self, key_path=Path('Comon','Res','yaKEY.json')):
-        self.path = key_path
+class YandexOCR(yaOCR):
+    def __init__(self):
+        yakeys_obj = YaKeys()
+        self.yakeys = yakeys_obj.get_keys()
+        self.session = YaSession()
 
-    def set_key_path(self, path):
-         self.path = path
+    def image_to_string (self):
+        aim_dict = self.session.getsession(self.yakeys.get('OAuth'),self.yakeys.get('folderid'))
+        self.aim_key = aim_dict.get('AIM')
+        self.folder_id = aim_dict.get('folderid') 
+        return self.image_to_str()
 
-    def get_keys(self, path):
-                with open(path) as f:
-                    keys = json.load(f)
-                return keys
-    
-    def set_keys(self, OAuth, folderid):
-         yandexKey = {'OAuth': OAuth,'folderid':folderid}
-         with open(self.path,'w') as f:
-            json.dump(yandexKey, f,  sort_keys=True, indent=2)     
-
-class YandexOCR(YaKeys, yaOCR):
-        def __init__(self, key_path=Path('Comon', 'Res', 'yaKEY.json')):
-             super().__init__(key_path)
-             ya_keys = self.get_keys(key_path)
-             self.o_auth = ya_keys.get('OAuth')
-             self.folder_id = ya_keys.get('folderid')
             
 
