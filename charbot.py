@@ -34,9 +34,7 @@ barcode = BarCode() # Инициализация объекта для рабо�
 class ChatBot:
     def __init__(self, bt):
         self.auth = False
-        self.is_ocrmode = False
-        self.is_barmode = False
-        self.is_gpt_keymode = False
+        self.chat_mode = '' #gpt_keymode , barmode, ocrmode , gpt_voicemode
         self.ocr_image_file = ocr_image_file
         self.bar_image_file = bar_image_file 
         self.bot = tb.TeleBot(bt)
@@ -215,31 +213,36 @@ class ChatBot:
             with open(path, 'wb') as new_file:
                 new_file.write(downloaded_file)
             self.del_last_msg(message)
-            self.bot.send_message(chat_id=message.chat.id, text='...документ сохранил!')                      
+            self.bot.send_message(chat_id=message.chat.id, text='...документ сохранил!')
+
+    def save_voice_file(self, message, path): #Сохраняет на диск голосовое сообщение
+        file_id = message.voice.file_id
+        voice_file = self.bot.get_file(file_id)
+        voice_file.download(path)                      
 
     def handler_file(self, message): # Обработчик файлов , присланых пользователем в чат
         if message.content_type == 'photo':
-            if self.is_ocrmode == True:
+            if self.chat_mode == 'ocrmode':
                 path = self.ocr_image_file
                 self.save_pix_file(message, path)
                 self.bot.send_message(chat_id=message.chat.id, text='Пытаюсь обработать...')
                 self.ocr_to_str(message)
-                self.is_ocrmode = False                     
+                self.chat_mode = ''                    
                 return
-            elif self.is_barmode ==True:
+            elif self.chat_mode =='barmode':
                 path = self.bar_image_file
                 self.save_pix_file(message, path)
                 self.bar_to_str(message)
-                self.is_barmode = False
+                self.chat_mode = ''
                 return
-            elif self.is_gpt_keymode == True:
+            elif self.chat_mode == 'gpt_keymode':
                 if gpt.new_key(key=message.text):
-                    self.is_gpt_keymode = False
+                    self.chat_mode = ''
                     self.del_last_msg(message)
                     self.bot.send_message(chat_id=message.chat.id, text='Ок')
                     return
                 else:
-                    self.is_gpt_keymode = False
+                    self.chat_mode = ''
                     self.del_last_msg(message)
                     self.bot.send_message(chat_id=message.chat.id, text='Ошибка!')
             else:
@@ -251,8 +254,17 @@ class ChatBot:
             Path(f'Users/{message.from_user.first_name}_{message.from_user.last_name}/Docs/').mkdir(parents=True, exist_ok=True)
             path = Path(f'Users/{message.from_user.first_name}_{message.from_user.last_name}/Docs/' + message.document.file_name)
             self.save_doc_file(self, message, path)
+        elif message.content_type == 'voice':
+            if self.chat_mode == 'voice_rec':
+                Path(f'Users/{message.from_user.first_name}_{message.from_user.last_name}/Voice/').mkdir(parents=True, exist_ok=True)
+                path = Path(f'Users/{message.from_user.first_name}_{message.from_user.last_name}/Voice/' + message.voice.file_name)
+                self.save_voice_file(message, path)
+            else:
+                path = Path(f'Comon', 'Tmp', 'speech.ogg')
+                self.save_voice_file(message, path)
+                self.chat_mode = ''
 
-
+  
     def swchat(self, message): # Перейти в другой чат
         markup = types.InlineKeyboardMarkup()
         switch_button = types.InlineKeyboardButton(text='Жми сюда!', switch_inline_query="Telegram")
@@ -269,17 +281,21 @@ class ChatBot:
         self.bot.send_message(message.chat.id, text=txt, parse_mode="HTML")#, reply_markup = markup)    
     
     def ocr_mode_on(self, message):
-        self.is_ocrmode = True
+        self.chat_mode = 'ocrmode'
         self.bot.send_message(message.chat.id, text='Ожидаю фото или картинку с текстом.')
 
 
     def bar_mode_on(self, message):
-        self.is_barmode = True 
+        self.chat_mode = 'barmode' 
         self.bot.send_message(message.chat.id, text='Ожидаю фото или картинку с баркодом.')
     
     def gptk_mode_on(self, message):
-          self.is_gpt_keymode = True
-          self.bot.send_message(message.chat.id, text='Ожидаю ввода API Key...')          
+          self.chat_mode = 'gpt_keymode'
+          self.bot.send_message(message.chat.id, text='Ожидаю ввода API Key...')
+    
+    def voice_rec(self, message):
+          self.chat_mode ='voice_save' 
+          self.bot.send_message(message.chat.id, text='Для записи сообщения нажмите на микрофон.')               
     
     def bar_to_str(self, message):
         text  = ''
@@ -293,18 +309,13 @@ class ChatBot:
             self.bot.send_message(message.chat.id, text = 'К сожалению не удалось распознать изображение.')
         self.bot.send_message(message.chat.id, text = text)
 
-
-        def gpt_key_upd(self, message):
-            if self.is_gpt_keymode == True:
-                pass
-
     def ocr_to_str(self,message): 
         txt = ocr.image_to_string() #для яндекс
         # txt = ocr.image_to_string(self.ocr_image_file) для tesseract
         self.bot.send_message(message.chat.id, text=txt)
         
 
-    def say(self, message): #     отправка ответа на распространенные вопросы
+    def say(self, message): #     отправка ответа на распространенные вопросы  при отключенном или ошибке GPT чата
         mess = message.text.lower() 
         if not mess.startswith('/'):
             answ = gpt.answer(message.text)
