@@ -8,7 +8,7 @@ with open(key_path) as key:
 chat = cb.ChatBot(tb_key)
 
 
-@chat.bot.message_handler(content_types=['photo', 'document', 'audio', 'video'])  #обработчик получаемого контента
+@chat.bot.message_handler(content_types=['photo', 'document', 'audio', 'video', 'voice'])  #обработчик получаемого контента
 def exec(call):
     if chat.auth == True:
         chat.handler_file(call)
@@ -24,9 +24,10 @@ def exec(message):
         if message.text=='/menu'    : chat.main_menu(message) # Вызов главного меню
         elif message.text=='/swchat'  : chat.swchat(message)   # Перенаравление в чат
         elif message.text=='/url'     : chat.url(message)      # Выдача ссылки
-        elif message.text=='/ocr'     : chat.ocr_mode_on(message)
-        elif message.text=='/bar'     : chat.bar_mode_on(message)
-        elif message.text=='/gkey'     : chat.gptk_mode_on(message)
+        elif message.text=='/ocr'     : chat.ocr_mode_on(message) #Распознавание текста с картинки
+        elif message.text=='/bar'     : chat.bar_mode_on(message) #Распознавание штрихкодов     
+        elif message.text=='/gkey'     : chat.gptk_mode_on(message) # обновление ключа GPT чата
+        elif message.text=='/voice'    : chat.voice_rec (message) # обновление ключа GPT чата
         
         else  : chat.say(message)      # Анализ и обработака текстовых сообщений
     else: 
