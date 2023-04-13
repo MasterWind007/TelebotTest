@@ -2,7 +2,6 @@ from yaauth import YaKeys, YaSession
 import json
 import os
 
-
 class YaVoiceRc():
     def __init__(self):
       self.iam_token =''
@@ -10,15 +9,22 @@ class YaVoiceRc():
       self.audioout_json ='audioout.json'
     
     def __voice_to_json(self, voice_path, out_path) -> None:
-        crl = 'curl -X POST -H "Authorization: Bearer '+self.iam_token+'" -H "Transfer-Encoding: chunked" --data-binary "@'+voice_path+'" "https://stt.api.cloud.yandex.net/speech/v1/stt:recognize?topic=general&folderId='+self.folder_id+'" > '+ out_path
+        crl = 'curl -X POST -H "Authorization: Bearer '
+        crl+= self.iam_token
+        crl+='" -H "Transfer-Encoding: chunked" --data-binary "@'+voice_path.__str__()+'" "https://stt.api.cloud.yandex.net/speech/v1/stt:recognize?topic=general&folderId='
+        crl+= self.folder_id
+        crl+='" > '
+        crl+= out_path.__str__()
         export_req = ''.join(('export IAM_TOKEN=', self.iam_token ))
         to_curl = ''.join(crl)
         os.system(export_req)
         os.system(to_curl)
     
     def __json_to_string(self,json_file) -> str:
-        with open(json_file) as json_out:
-            body = json.loads(json_out)
+        body = {}
+        with open(json_file,'r') as json_out:
+          try: body = json.load(json_out)
+          except: return 'Ни чего не понял из того чтоты сказал!'  
         return body.get('result')
 
     def get_string(self, voice_path) -> str:
@@ -31,7 +37,7 @@ class YaVoiceToText(YaVoiceRc):
     def __init__(self):
         ya_keys_obj = YaKeys()
         self.ya_keys = ya_keys_obj.get_keys()
-        self.folder_id = self.ya_keys.get('foldefid')
+        self.folder_id = self.ya_keys.get('folderid')
 
     def voice_to_string(self, voice_path, audioout_json = 'audioout.json')-> str: 
             '''

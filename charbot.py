@@ -25,7 +25,8 @@ tmp_path =    {'audio' : Path('Comon','Tmp','Audio'),
                'video': Path('Comon','Tmp','Video')} 
 usr_root_path = Path('Users')
 usr_part_path = {'audio':'Audio','docs':'Docs','pix':'Pix','video':'Video'} 
-voice_path = Path('Comon','Tmp','speech.ogg')
+voice_path = Path('speech.ogg')
+voice_out_json = Path('audioout.json')
 
 ocr = YandexOCR()
 voice = YaVoiceToText()
@@ -47,7 +48,8 @@ class ChatBot:
         self.tmp_path       = tmp_path #Пути к временным папкам документов
         self.usr_root_path  = usr_root_path
         self.usr_part_path  = usr_part_path # Путь к папкам пользователя
-        self.voice_path     = voice_path # путь е временному файлу голосового распознавания
+        self.voice_path     = voice_path # путь к временному файлу голосового распознавания
+        self.voice_out_json = voice_out_json # Путь к выходному файлу с текчтом json
 
         self.chat_answ     = {'mas_hello' :['Привет.', 'День добрый!', 'Добрый день!', 'Здравствуй!', 'Доброго дня!'],
                               'mas_del'   :['Заебок','Норм', 'Пойдет', 'Хорошо', 'Отлично', 'Лучше не бывает!', 'Лучше всех!', 'Как обычно'],
@@ -267,11 +269,10 @@ class ChatBot:
                 path = Path(f'Users/{message.from_user.first_name}_{message.from_user.last_name}/Voice/' + message.voice.file_name)
                 self.save_voice_file(message, path)
             else:
-                path = self.voice_path
-                self.save_voice_file(message, path)
-                text = voice.voice_to_string(path)
+                self.save_voice_file(message, self.voice_path)
+                text = voice.voice_to_string(self.voice_path, self.voice_out_json)
                 self.chat_mode = ''
-                self.bot.send_message(chat_id=message.chat.id, text=text)
+                self.bot.send_message(message.chat.id, gpt.answer(text))
 
   
     def swchat(self, message): # Перейти в другой чат
