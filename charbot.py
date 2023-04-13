@@ -7,6 +7,7 @@ import os
 from barcode import BarCode
 from gptai import GptChat
 from yacloudviz import YandexOCR
+from yasprec import YaVoiceToText
 from pathlib import Path
 
 
@@ -24,8 +25,11 @@ tmp_path =    {'audio' : Path('Comon','Tmp','Audio'),
                'video': Path('Comon','Tmp','Video')} 
 usr_root_path = Path('Users')
 usr_part_path = {'audio':'Audio','docs':'Docs','pix':'Pix','video':'Video'} 
+voice_path = Path('Comon','Tmp','speech.ogg')
 
 ocr = YandexOCR()
+voice = YaVoiceToText()
+
 # ocr = ocrmodule.OcrClass(ocr_exe_file[0]) # Инициализация объекта для распознавания текста teseract
 gpt = GptChat() #Инициализация объекта работы с GPT4 чат
 gpt.get_key()
@@ -43,6 +47,7 @@ class ChatBot:
         self.tmp_path       = tmp_path #Пути к временным папкам документов
         self.usr_root_path  = usr_root_path
         self.usr_part_path  = usr_part_path # Путь к папкам пользователя
+        self.voice_path     = voice_path # путь е временному файлу голосового распознавания
 
         self.chat_answ     = {'mas_hello' :['Привет.', 'День добрый!', 'Добрый день!', 'Здравствуй!', 'Доброго дня!'],
                               'mas_del'   :['Заебок','Норм', 'Пойдет', 'Хорошо', 'Отлично', 'Лучше не бывает!', 'Лучше всех!', 'Как обычно'],
@@ -216,9 +221,11 @@ class ChatBot:
             self.bot.send_message(chat_id=message.chat.id, text='...документ сохранил!')
 
     def save_voice_file(self, message, path): #Сохраняет на диск голосовое сообщение
-        file_id = message.voice.file_id
-        voice_file = self.bot.get_file(file_id)
-        voice_file.download(path)                      
+            file_info = self.bot.get_file(message.voice.file_id)
+            downloaded_file = self.bot.download_file(file_info.file_path)        
+            with open(path, 'wb') as new_file:
+              new_file.write(downloaded_file)        
+                     
 
     def handler_file(self, message): # Обработчик файлов , присланых пользователем в чат
         if message.content_type == 'photo':
@@ -260,9 +267,11 @@ class ChatBot:
                 path = Path(f'Users/{message.from_user.first_name}_{message.from_user.last_name}/Voice/' + message.voice.file_name)
                 self.save_voice_file(message, path)
             else:
-                path = Path(f'Comon', 'Tmp', 'speech.ogg')
+                path = self.voice_path
                 self.save_voice_file(message, path)
+                text = voice.voice_to_string(path)
                 self.chat_mode = ''
+                self.bot.send_message(chat_id=message.chat.id, text=text)
 
   
     def swchat(self, message): # Перейти в другой чат

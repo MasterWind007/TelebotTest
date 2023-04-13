@@ -2,7 +2,6 @@ import json
 import subprocess
 from pathlib import Path
 
-
 class YaKeys():
     def __init__(self, key_path=Path('Comon','Res','yaKEY.json')):
         '''
@@ -18,7 +17,7 @@ class YaKeys():
          '''
          self.path = path
 
-    def get_keys(self):
+    def get_keys(self)-> dict:
         '''
         Возвращает словарь со структурой {'OAuth': '...', 'folderid':'...'}
         '''
