@@ -8,6 +8,7 @@ from barcode import BarCode
 from gptai import GptChat
 from yacloudviz import YandexOCR
 from yasprec import YaVoiceToText
+from yaspsyn import YaVoiceSyn
 from pathlib import Path
 
 
@@ -27,9 +28,11 @@ usr_root_path = Path('Users')
 usr_part_path = {'audio':'Audio','docs':'Docs','pix':'Pix','video':'Video'} 
 voice_path = Path('speech.ogg')
 voice_out_json = Path('audioout.json')
+syn_voice_path = Path('syn_voie.ogg')
 
 ocr = YandexOCR()
 voice = YaVoiceToText()
+voice_syn = YaVoiceSyn(syn_voice_path)
 
 # ocr = ocrmodule.OcrClass(ocr_exe_file[0]) # Инициализация объекта для распознавания текста teseract
 gpt = GptChat() #Инициализация объекта работы с GPT4 чат
@@ -273,6 +276,11 @@ class ChatBot:
                 text = voice.voice_to_string(self.voice_path, self.voice_out_json)
                 self.chat_mode = ''
                 self.bot.send_message(message.chat.id, gpt.answer(text))
+        elif message.content_type == 'text':
+            if self.chat_mode == 'text_syn':
+                voice_syn.text_to_voice(message.text)
+                self.bot.sendVoice(message.chat.id, syn_voice_path)
+                self.chat_mode = ''
 
   
     def swchat(self, message): # Перейти в другой чат
@@ -305,7 +313,12 @@ class ChatBot:
     
     def voice_rec(self, message):
           self.chat_mode ='voice_save' 
-          self.bot.send_message(message.chat.id, text='Для записи сообщения нажмите на микрофон.')               
+          self.bot.send_message(message.chat.id, text='Для записи сообщения нажмите на микрофон.')
+
+    def text_syn (self, message):
+          self.chat_mode ='text_syn'
+          self.bot.send_message(message.chat.id, text='Напиши или вставь текст, который надо озвучить.') 
+
     
     def bar_to_str(self, message):
         text  = ''
