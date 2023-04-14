@@ -49,7 +49,7 @@ class YaVoiceToText(YaVoiceRc):
             '''
             self.audioout_json = audioout_json
             sess_keys = YaSession().getsession(self.ya_keys.get('OAuth'),self.ya_keys.get('folderid'))
-            self.iam_token = sess_keys.get('AIM')
+            self.iam_token = sess_keys.get('IAM')
             return self.get_string(voice_path)
 
 

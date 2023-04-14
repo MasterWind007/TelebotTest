@@ -54,7 +54,7 @@ class YandexOCR(yaOCR):
 
     def image_to_string (self):
         aim_dict = self.session.getsession(self.yakeys.get('OAuth'),self.yakeys.get('folderid'))
-        self.aim_key = aim_dict.get('AIM')
+        self.aim_key = aim_dict.get('IAM')
         self.folder_id = aim_dict.get('folderid') 
         return self.image_to_str()
 

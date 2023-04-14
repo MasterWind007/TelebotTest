@@ -1,8 +1,6 @@
-from  yacloudviz import YandexOCR
+from yaspsyn import YaVoiceSyn
 
 
 
-
-
-ocr = YandexOCR()
-print(ocr.image_to_string())
+voice_syn = YaVoiceSyn('speech.ogg')
+voice_syn.text_to_voice('Пейте пиво с плюшками, будет хер с веснушками.')

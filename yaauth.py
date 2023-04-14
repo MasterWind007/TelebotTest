@@ -51,7 +51,7 @@ class YaSession():
         Принимает строковые параметры:
         o_auth - Ключ Yandex OAuth Key
         folderid - идентификатор каталога
-        Возвращает словаь со структурой {'AIM': '...', 'folderid':'...'} 
+        Возвращает словаь со структурой {'IAM': '...', 'folderid':'...'} 
         '''
         aim = self.__getaim(o_auth)
-        return {'AIM': aim, 'folderid':folder_id}
+        return {'IAM': aim, 'folderid':folder_id}
