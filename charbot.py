@@ -276,11 +276,7 @@ class ChatBot:
                 text = voice.voice_to_string(self.voice_path, self.voice_out_json)
                 self.chat_mode = ''
                 self.bot.send_message(message.chat.id, gpt.answer(text))
-        elif message.content_type == 'text':
-            if self.chat_mode == 'text_syn':
-                voice_syn.text_to_voice(message.text)
-                self.bot.sendVoice(message.chat.id, syn_voice_path)
-                self.chat_mode = ''
+
 
   
     def swchat(self, message): # Перейти в другой чат
@@ -336,9 +332,25 @@ class ChatBot:
         txt = ocr.image_to_string() #для яндекс
         # txt = ocr.image_to_string(self.ocr_image_file) для tesseract
         self.bot.send_message(message.chat.id, text=txt)
-        
+
+    def voice_say(self, text) -> voice: # Cинтезирует аудиофайл из текста 
+        '''
+        Cинтезирует аудиофайл из текста и
+        возвращает бинарный массив из синтезированного ogg файла
+        '''
+        voice_syn.text_to_voice(text)
+        with open(voice_syn.out_file, 'rb') as tmp:
+            voice = BytesIO(tmp.read())
+        voice.name = voice_syn.out_file
+        return voice
+                     
 
     def say(self, message): #     отправка ответа на распространенные вопросы  при отключенном или ошибке GPT чата
+        if self.chat_mode == 'text_syn':
+            voice = self.voice_say(message.text)
+            self.bot.send_voice(message.chat.id, voice )
+            self.chat_mode = ''
+            return
         mess = message.text.lower() 
         if not mess.startswith('/'):
             answ = gpt.answer(message.text)
@@ -358,7 +370,11 @@ class ChatBot:
                     else:
                         self.bot.reply_to(message, self.chat_answ['mas_noUnd'])
                         return
-            self.bot.send_message(message.chat.id, gpt.answer(message.text))
+            if not mess.startswith('скажи мне '):
+                self.bot.send_message(message.chat.id, gpt.answer(message.text))
+            else:
+                voice = self.voice_say(gpt.answer(message.text))
+                self.bot.send_voice(message.chat.id, voice )
             return 
 
             

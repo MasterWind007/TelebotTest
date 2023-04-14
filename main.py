@@ -28,7 +28,7 @@ def exec(message):
         elif message.text=='/bar'     : chat.bar_mode_on(message) #Распознавание штрихкодов     
         elif message.text=='/gkey'     : chat.gptk_mode_on(message) # обновление ключа GPT чата
         elif message.text=='/voice'    : chat.voice_rec (message) # Распознавание голоса (не реализовано)
-        elif message.text=='/say'    : chat.text_syn (message) # воспроизвести текст голосом
+        elif message.text=='/say'      : chat.text_syn (message) # воспроизвести текст голосом
         
         else  : chat.say(message)      # Анализ и обработака текстовых сообщений
     else: 

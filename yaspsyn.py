@@ -9,7 +9,6 @@ class YaVoiceSynPrep():
     def __init_(self):
         self.iam_token =''
         self.folder_id = ''
-        self.raw_file =''
         self.out_file = ''
         self.text = ''
 
