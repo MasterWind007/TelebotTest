@@ -373,8 +373,8 @@ class ChatBot:
                         return
             need_voice = False # Отправить сообщение голосом ?
             for i in self.chat_quest['say_me']:
-                if not mess.startswith(i): need_voice = True
-            if need_voice == True:       
+                if mess.startswith(i): need_voice = True
+            if need_voice == False:       
                 self.bot.send_message(message.chat.id, gpt.answer(message.text))
             else:
                 voice = self.voice_say(gpt.answer(message.text))
