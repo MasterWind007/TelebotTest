@@ -371,12 +371,15 @@ class ChatBot:
                     else:
                         self.bot.reply_to(message, self.chat_answ['mas_noUnd'])
                         return
+            need_voice = False # Отправить сообщение голосом ?
             for i in self.chat_quest['say_me']:
-                if not mess.startswith(i):       
-                    self.bot.send_message(message.chat.id, gpt.answer(message.text))
+                if not mess.startswith(i): need_voice = True
+            if need_voice == True:       
+                self.bot.send_message(message.chat.id, gpt.answer(message.text))
             else:
                 voice = self.voice_say(gpt.answer(message.text))
                 self.bot.send_voice(message.chat.id, voice )
+            need_voice = False
             return 
 
             
