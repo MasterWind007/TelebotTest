@@ -1,5 +1,5 @@
 from yaauth import YaKeys, YaSession
-from pydub import AudioSegment
+# from pydub import AudioSegment
 import os
 
 

@@ -234,7 +234,7 @@ class ChatBot:
                      
 
     def handler_file(self, message): # Обработчик файлов , присланых пользователем в чат
-        if message.content_type == 'photo':
+        if message.content_type == 'photo': # обработчик сообщений с картинками
             if self.chat_mode == 'ocrmode':
                 path = self.ocr_image_file
                 self.save_pix_file(message, path)
@@ -263,12 +263,12 @@ class ChatBot:
                 Path(f'Users/{message.from_user.first_name}_{message.from_user.last_name}/Pix/').mkdir(parents=True, exist_ok=True)
                 path = Path(f'Users/{message.from_user.first_name}_{message.from_user.last_name}/Pix/{message.chat.id}_' + file_info.file_path.replace('photos/', ''))
                 self.save_pix_file(message, path)
-        elif message.content_type == 'document':
+        elif message.content_type == 'document':# обработчик сообщений с документом 
             Path(f'Users/{message.from_user.first_name}_{message.from_user.last_name}/Docs/').mkdir(parents=True, exist_ok=True)
             path = Path(f'Users/{message.from_user.first_name}_{message.from_user.last_name}/Docs/' + message.document.file_name)
             self.save_doc_file(self, message, path)
-        elif message.content_type == 'voice':
-            if self.chat_mode == 'voice_rec':
+        elif message.content_type == 'voice': # обработчик голосовых ссобщений
+            if self.chat_mode == 'voice_rec': 
                 Path(f'Users/{message.from_user.first_name}_{message.from_user.last_name}/Voice/').mkdir(parents=True, exist_ok=True)
                 path = Path(f'Users/{message.from_user.first_name}_{message.from_user.last_name}/Voice/' + message.voice.file_name)
                 self.save_voice_file(message, path)
@@ -276,7 +276,11 @@ class ChatBot:
                 self.save_voice_file(message, self.voice_path)
                 text = voice.voice_to_string(self.voice_path, self.voice_out_json)
                 self.chat_mode = ''
-                self.bot.send_message(message.chat.id, gpt.answer(text))
+                if self.need_voice(text):
+                    voice = self.voice_say(gpt.answer(text))
+                    self.bot.send_voice(message.chat.id, voice )                
+                else:    
+                    self.bot.send_message(message.chat.id, gpt.answer(text))
 
 
   
@@ -344,18 +348,53 @@ class ChatBot:
             voice = BytesIO(tmp.read())
         voice.name = voice_syn.out_file
         return voice
-                     
 
-    def say(self, message): #     отправка ответа на распространенные вопросы  при отключенном или ошибке GPT чата
+    def need_voice(self, text)-> bool:
+        '''
+        обрабарывает текс и ищет клчевые слова
+        Если находит возвращает True если нет False
+        Ключевые слова  находятся в словаре:
+        self.chat_quest['say_me']
+        '''
+        need_voice = False
+        mess = text.lover()
+        for i in self.chat_quest['say_me']: # Отправить сообщение голосом ?
+            if mess.startswith(i): 
+                need_voice = True 
+        return need_voice               
+
+    def text_or_voice(self, message)-> None: #По состонию need_voice(), определяет, отправлять сообщение текстом или голосом
+        if self.need_voice(message.text):       
+            voice = self.voice_say(gpt.answer(message.text))
+            self.bot.send_voice(message.chat.id, voice )
+        else:
+            self.bot.send_message(message.chat.id, gpt.answer(message.text))
+                    
+
+    def say(self, message)-> None:
+        '''
+        Отправка ответа пользователю на его текстовое сообщение
+        Если ответ требуется.
+        message - объект с сообщением пользователя в чате
+        ''' 
         if self.chat_mode == 'text_syn':
+            '''
+            Если режим чата - синтез голосового сообщения из текстового сообщения пользователя,
+            то синтезируем голосовое сообщение и отправляем его пользователю.
+            завершаем выполнение функции say()    
+            '''
             voice = self.voice_say(message.text)
             self.bot.send_voice(message.chat.id, voice )
             self.chat_mode = ''
             return
         mess = message.text.lower() 
-        if not mess.startswith('/'):
+        if not mess.startswith('/'): # Если текст сообщения НЕ начинается со знака команды чата "/"  то посылаем текст в GPT4
             answ = gpt.answer(message.text)
             if answ.startswith('GptErr!'):
+                '''
+                Если GPT4 почему то не работает, то отправляем пользоватею
+                заранее заготовленые ответы (режим глупого чата)
+                '''
                 for i in self.chat_quest['say_hwy_list']:
                     if mess.startswith(i):
                         self.bot.send_message(message.chat.id, self.rand_ansv(self.chat_answ['mas_del']))
@@ -371,15 +410,7 @@ class ChatBot:
                     else:
                         self.bot.reply_to(message, self.chat_answ['mas_noUnd'])
                         return
-            need_voice = False # Отправить сообщение голосом ?
-            for i in self.chat_quest['say_me']:
-                if mess.startswith(i): need_voice = True
-            if need_voice == False:       
-                self.bot.send_message(message.chat.id, gpt.answer(message.text))
-            else:
-                voice = self.voice_say(gpt.answer(message.text))
-                self.bot.send_voice(message.chat.id, voice )
-            need_voice = False
+            self.text_or_voice(message)
             return 
 
             
