@@ -357,7 +357,7 @@ class ChatBot:
         self.chat_quest['say_me']
         '''
         need_voice = False
-        mess = text.lover()
+        mess = text.lower()
         for i in self.chat_quest['say_me']: # Отправить сообщение голосом ?
             if mess.startswith(i): 
                 need_voice = True 
