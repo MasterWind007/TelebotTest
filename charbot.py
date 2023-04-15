@@ -349,7 +349,7 @@ class ChatBot:
         voice.name = voice_syn.out_file
         return voice
 
-    def need_voice(self, text='Не смог обработать соощение!')-> bool:
+    def need_voice(self, text)-> bool:
         '''
         обрабарывает текс и ищет клчевые слова
         Если находит возвращает True если нет False
@@ -357,7 +357,7 @@ class ChatBot:
         self.chat_quest['say_me']
         '''
         need_voice = False
-        mess = text.lower()
+        mess = str(text).lower()
         for i in self.chat_quest['say_me']: # Отправить сообщение голосом ?
             if mess.startswith(i): 
                 need_voice = True 
