@@ -277,8 +277,8 @@ class ChatBot:
                 text = voice.voice_to_string(self.voice_path, self.voice_out_json)
                 self.chat_mode = ''
                 if self.need_voice(text):
-                    voice = self.voice_say(gpt.answer(text))
-                    self.bot.send_voice(message.chat.id, voice )                
+                    voice_raw = self.voice_say(gpt.answer(text))
+                    self.bot.send_voice(message.chat.id, voice_raw )                
                 else:    
                     self.bot.send_message(message.chat.id, gpt.answer(text))
 
@@ -338,9 +338,9 @@ class ChatBot:
         # txt = ocr.image_to_string(self.ocr_image_file) для tesseract
         self.bot.send_message(message.chat.id, text=txt)
 
-    def voice_say(self, text) -> voice: # Cинтезирует аудиофайл из текста 
+    def voice_say(self, text)-> bytes: # Cинтезирует аудиофайл из текста 
         '''
-        Cинтезирует аудиофайл из текста и
+        Cинтезирует аудиофайл из текста в ogg файл и
         возвращает бинарный массив из синтезированного ogg файла
         '''
         voice_syn.text_to_voice(text)
@@ -365,8 +365,8 @@ class ChatBot:
 
     def text_or_voice(self, message)-> None: #По состонию need_voice(), определяет, отправлять сообщение текстом или голосом
         if self.need_voice(message.text):       
-            voice = self.voice_say(gpt.answer(message.text))
-            self.bot.send_voice(message.chat.id, voice )
+            voice_raw = self.voice_say(gpt.answer(message.text))
+            self.bot.send_voice(message.chat.id, voice_raw )
         else:
             self.bot.send_message(message.chat.id, gpt.answer(message.text))
                     
