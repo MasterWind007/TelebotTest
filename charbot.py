@@ -78,7 +78,7 @@ class ChatBot:
                                 # types.InlineKeyboardButton("Мои картинки 🏞", callback_data='mypixlist'),
                                 types.InlineKeyboardButton("Распознать текст 🏞", callback_data='myocr'),
                                 types.InlineKeyboardButton("Распознать Баркод 🪪", callback_data='mybarcode'),
-                                types.InlineKeyboardButton(text='Наш сайт 🧻', web_app=types.WebAppInfo('https://ya.ru')),
+                                types.InlineKeyboardButton(text='Для консоли хостинга', web_app=types.WebAppInfo('https://www.pythonanywhere.com')),
                                 types.InlineKeyboardButton(text='Перейти в чат 🪠', switch_inline_query="Telegram")]
                                }
         
@@ -295,6 +295,7 @@ class ChatBot:
         # btn_my_site= types.InlineKeyboardButton(text='Наш сайт', url='https://ya.ru')
         # markup.add(btn_my_site)
         txt = "Вот необходимые вам ссылки:\n\
+    <a href='https://www.pythonanywhere.com'>Pythonanywhere</a>\n\
     <a href='https://yndex.ru/'>Яндекс</a>\n\
     <a href='https://coogle.com/'>Google</a>"
         self.bot.send_message(message.chat.id, text=txt, parse_mode="HTML")#, reply_markup = markup)    
