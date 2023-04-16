@@ -78,7 +78,7 @@ class ChatBot:
                                 # types.InlineKeyboardButton("Мои картинки 🏞", callback_data='mypixlist'),
                                 types.InlineKeyboardButton("Распознать текст 🏞", callback_data='myocr'),
                                 types.InlineKeyboardButton("Распознать Баркод 🪪", callback_data='mybarcode'),
-                                types.InlineKeyboardButton(text='Для консоли хостинга', web_app=types.WebAppInfo('https://www.pythonanywhere.com')),
+                                types.InlineKeyboardButton(text='Для консоли хостинга', web_app=types.WebAppInfo('https://www.pythonanywhere.com/user/MasterWind007/')),
                                 types.InlineKeyboardButton(text='Перейти в чат 🪠', switch_inline_query="Telegram")]
                                }
         
