@@ -27,9 +27,6 @@ class YaVoiceSynPrep():
         os.system(to_curl)
 
 
-
-
-
 class YaVoiceSyn(YaVoiceSynPrep):
     def __init__(self, out_file):
         ya_keys_obj = YaKeys()
