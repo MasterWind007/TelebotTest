@@ -3,8 +3,6 @@ from yaauth import YaKeys, YaSession
 import os
 
 
-
-
 class YaVoiceSynPrep():
     def __init_(self):
         self.iam_token =''
@@ -12,9 +10,13 @@ class YaVoiceSynPrep():
         self.out_file = ''
         self.text = ''
 
-
-
     def text_to_ogg(self, text, ogg_file)-> None:
+        '''
+        Готовит и отправляет POST запрос в Yandex Cloud 
+        и получает ответ в виде ogg вайла
+        text -  текст которые нужно синтезировать
+        ogg_file -  имя файла с синтезированым голосом
+        '''
         crl  = 'curl -X POST '
         crl += '-H "Authorization: Bearer '+self.iam_token+'" '
         crl+=  '-o '+ogg_file.__str__() 
@@ -27,7 +29,7 @@ class YaVoiceSynPrep():
         os.system(to_curl)
 
 
-class YaVoiceSyn(YaVoiceSynPrep):
+class YaVoiceSyn(YaVoiceSynPrep): # обернул авторизацию и запрос данных в один класс для удобства пользования
     def __init__(self, out_file):
         ya_keys_obj = YaKeys()
         self.ya_keys = ya_keys_obj.get_keys()
