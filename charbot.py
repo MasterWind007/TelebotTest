@@ -78,7 +78,7 @@ class ChatBot:
                                 # types.InlineKeyboardButton("Мои картинки 🏞", callback_data='mypixlist'),
                                 types.InlineKeyboardButton("Распознать текст 🏞", callback_data='myocr'),
                                 types.InlineKeyboardButton("Распознать Баркод 🪪", callback_data='mybarcode'),
-                                types.InlineKeyboardButton(text='Перевести текст 🪠', callback_data='translite'),
+                                types.InlineKeyboardButton(text='Перевести текст 🇷🇺', callback_data='translite'),
                                 types.InlineKeyboardButton(text='Для консоли хостинга', web_app=types.WebAppInfo('https://www.pythonanywhere.com/user/MasterWind007/')),
                                 types.InlineKeyboardButton(text='Перейти в чат 🪠', switch_inline_query="Telegram")]
                                }
@@ -439,6 +439,7 @@ class ChatBot:
         elif mess == "mydoclist": self.my_doclist(message)
         elif mess == "myocr": self.ocr_mode_on(message)
         elif mess == "mybarcode": self.bar_mode_on(message)
+        elif mess == "translite": self.translite(message)
         elif c_arg.is_exist(mess, "getpix"): self.sendpix(message,c_arg.arg_name()) # получение команд и их аргументов от кнопок
         elif c_arg.is_exist(mess, "getdoc"): self.sendfile(message,c_arg.arg_name())# получение команд и их аргументов от кнопок
         elif mess == 'menu': self.main_menu(message)
