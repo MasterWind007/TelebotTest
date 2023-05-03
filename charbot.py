@@ -389,7 +389,7 @@ class ChatBot:
             Если включен режим перевода текста на русский, то добавляем к тексту просьбу
             перевести текст и отправляем медифицированное сообщение боту 
             '''
-            msg = 'Переведи на русский следующий текст: '+ msg
+            msg = 'Переведи на русский, следующий текст: '+ msg
             self.chat_mode = ''
 
         if self.chat_mode == 'text_syn':
@@ -402,7 +402,8 @@ class ChatBot:
             self.bot.send_voice(message.chat.id, voice )
             self.chat_mode = ''
             return
-        mess = msg.lower() 
+        mess = msg.lower()
+        print(msg)
         if not mess.startswith('/'): # Если текст сообщения НЕ начинается со знака команды чата "/"  то посылаем текст в GPT4
             answ = gpt.answer(msg)
             if answ.startswith('GptErr!'):
