@@ -382,13 +382,14 @@ class ChatBot:
         Отправка ответа пользователю на его текстовое сообщение
         Если ответ требуется.
         message - объект с сообщением пользователя в чате
-        ''' 
+        '''
+        msg = message.text 
         if self.chat_mode == 'translate':
             '''
             Если включен режим перевода текста на русский, то добавляем к тексту просьбу
             перевести текст и отправляем медифицированное сообщение боту 
             '''
-            message = 'Переведи на русский следующий текст: \n'+ message
+            msg = 'Переведи на русский следующий текст: \n'+ message.text
             self.chat_mode = ''
 
         if self.chat_mode == 'text_syn':
@@ -397,13 +398,13 @@ class ChatBot:
             то синтезируем голосовое сообщение и отправляем его пользователю.
             завершаем выполнение функции say()    
             '''
-            voice = self.voice_from_text(message.text)
+            voice = self.voice_from_text(msg)
             self.bot.send_voice(message.chat.id, voice )
             self.chat_mode = ''
             return
-        mess = message.text.lower() 
+        mess = msg.lower() 
         if not mess.startswith('/'): # Если текст сообщения НЕ начинается со знака команды чата "/"  то посылаем текст в GPT4
-            answ = gpt.answer(message.text)
+            answ = gpt.answer(msg)
             if answ.startswith('GptErr!'):
                 '''
                 Если GPT4 почему то не работает, то отправляем пользоватею
