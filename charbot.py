@@ -78,6 +78,7 @@ class ChatBot:
                                 # types.InlineKeyboardButton("Мои картинки 🏞", callback_data='mypixlist'),
                                 types.InlineKeyboardButton("Распознать текст 🏞", callback_data='myocr'),
                                 types.InlineKeyboardButton("Распознать Баркод 🪪", callback_data='mybarcode'),
+                                types.InlineKeyboardButton(text='Перевести текст 🪠', callback_data='translite'),
                                 types.InlineKeyboardButton(text='Для консоли хостинга', web_app=types.WebAppInfo('https://www.pythonanywhere.com/user/MasterWind007/')),
                                 types.InlineKeyboardButton(text='Перейти в чат 🪠', switch_inline_query="Telegram")]
                                }
@@ -319,7 +320,11 @@ class ChatBot:
 
     def text_syn (self, message):
           self.chat_mode ='text_syn'
-          self.bot.send_message(message.chat.id, text='Напиши или вставь текст, который надо озвучить.') 
+          self.bot.send_message(message.chat.id, text='Напиши или вставь текст, который надо озвучить.')
+
+    def translite(self, message):
+          self.chat_mode ='translite'
+          self.bot.send_message(message.chat.id, text='Напиши или вставь текст, который надо перевести.') 
 
     
     def bar_to_str(self, message):
@@ -378,6 +383,14 @@ class ChatBot:
         Если ответ требуется.
         message - объект с сообщением пользователя в чате
         ''' 
+        if self.chat_mode == 'translate':
+            '''
+            Если включен режим перевода текста на русский, то добавляем к тексту просьбу
+            перевести текст и отправляем медифицированное сообщение боту 
+            '''
+            message = 'Переведи на русский следующий текст: \n'+ message
+            self.chat_mode = ''
+
         if self.chat_mode == 'text_syn':
             '''
             Если режим чата - синтез голосового сообщения из текстового сообщения пользователя,
