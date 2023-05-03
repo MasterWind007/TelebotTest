@@ -430,8 +430,10 @@ class ChatBot:
             answ = gpt.answer(msg)
             if answ.startswith('GptErr!'):
                 self.gpt_err(message)
+            self.text_or_voice(message)
             return
-        self.text_or_voice(message)  
+            
+          
 
             
     def del_last_msg(self, message): #  Удаление последнего сообщения
