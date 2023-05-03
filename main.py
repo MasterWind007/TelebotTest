@@ -29,7 +29,7 @@ def exec(message):
         elif message.text=='/gkey'          : chat.gptk_mode_on(message) # обновление ключа GPT чата
         elif message.text=='/voice'         : chat.voice_rec (message) # Распознавание голоса (не реализовано)
         elif message.text=='/say'           : chat.text_syn (message) # воспроизвести текст голосом
-        elif message.text=='/translite'     : chat.translite (message) # воспроизвести текст голосом
+        elif message.text=='/translate'     : chat.translate (message) # воспроизвести текст голосом
         else  : chat.say(message)      # Анализ и обработака текстовых сообщений
     else: 
         chat.bot.send_message(message.chat.id, chat.rand_ansv(chat.chat_logon['acc_no']))         
