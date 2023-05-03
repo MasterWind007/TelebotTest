@@ -375,7 +375,28 @@ class ChatBot:
             self.bot.send_voice(message.chat.id, voice_raw )
         else:
             self.bot.send_message(message.chat.id, gpt.answer(message.text))
-                    
+    def gpt_err(self, message):
+        '''
+        Если GPT4 почему то не работает, то отправляем пользоватею
+        заранее заготовленые ответы (режим глупого чата)
+        '''
+        mess = message.text.lower()
+        for i in self.chat_quest['say_hwy_list']:
+            if mess.startswith(i):
+                self.bot.send_message(message.chat.id, self.rand_ansv(self.chat_answ['mas_del']))
+                return
+        for i in self.chat_quest['say_hi_list']:
+            if mess.startswith(i):
+                self.bot.send_message(message.chat.id, self.rand_ansv(self.chat_answ['mas_hello']))
+                return
+        for i in self.chat_quest['say_nst_list']:
+            if mess.startswith(i):
+                self.bot.send_message(message.chat.id, self.rand_ansv(self.chat_answ['mas_nastr']))
+                return
+            else:
+                self.bot.reply_to(message, self.chat_answ['mas_noUnd'])
+                return
+                         
 
     def say(self, message)-> None:
         '''
@@ -389,8 +410,10 @@ class ChatBot:
             Если включен режим перевода текста на русский, то добавляем к тексту просьбу
             перевести текст и отправляем медифицированное сообщение боту 
             '''
-            msg = 'Переведи на русский, следующий текст: '+ msg
+            msg = 'Переведи на русский: '+ msg
+            self.bot.send_message(message.chat.id, gpt.answer(msg))
             self.chat_mode = ''
+            return
 
         if self.chat_mode == 'text_syn':
             '''
@@ -403,31 +426,12 @@ class ChatBot:
             self.chat_mode = ''
             return
         mess = msg.lower()
-        print(msg)
         if not mess.startswith('/'): # Если текст сообщения НЕ начинается со знака команды чата "/"  то посылаем текст в GPT4
             answ = gpt.answer(msg)
             if answ.startswith('GptErr!'):
-                '''
-                Если GPT4 почему то не работает, то отправляем пользоватею
-                заранее заготовленые ответы (режим глупого чата)
-                '''
-                for i in self.chat_quest['say_hwy_list']:
-                    if mess.startswith(i):
-                        self.bot.send_message(message.chat.id, self.rand_ansv(self.chat_answ['mas_del']))
-                        return
-                for i in self.chat_quest['say_hi_list']:
-                    if mess.startswith(i):
-                        self.bot.send_message(message.chat.id, self.rand_ansv(self.chat_answ['mas_hello']))
-                        return
-                for i in self.chat_quest['say_nst_list']:
-                    if mess.startswith(i):
-                        self.bot.send_message(message.chat.id, self.rand_ansv(self.chat_answ['mas_nastr']))
-                        return
-                    else:
-                        self.bot.reply_to(message, self.chat_answ['mas_noUnd'])
-                        return
-            self.text_or_voice(message)
-            return 
+                self.gpt_err(message)
+            return
+        self.text_or_voice(message)  
 
             
     def del_last_msg(self, message): #  Удаление последнего сообщения
