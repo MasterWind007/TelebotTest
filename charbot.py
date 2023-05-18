@@ -203,7 +203,9 @@ class ChatBot:
 эту команду в меню чата.\n\n\
 <b>А еще со мной можно просто\n\
 болтать на разные темы, так как\n\
-я являюсь транслятором чата GPT4</b>' 
+я являюсь транслятором чата GPT4\n\
+а так же голосовых синтезаторов \n\
+из Yandex Cloud </b>' 
         with open(Path(self.com_res_path["pix"],'M4.png'), 'rb') as img:
             self.bot.send_photo(message.chat.id, img, caption=txt , parse_mode='HTML' )
 
