@@ -13,7 +13,7 @@ from pathlib import Path
 
 
 ocr_exe_file = [Path('C:/','Program Files','Tesseract-OCR','tesseract.exe'),
-                Path('D:/','Program Files','Tesseract-OCR','tesseract.exe')]
+                Path('D:/','Program Files','Tesseract-OCR','tesseract.exe')] 
 ocr_image_file = Path('Comon','Tmp','ocrimg.jpg')
 bar_image_file = Path('Comon','Tmp','barcode.jpg')
 com_res_path ={'audio': Path('Comon','Res','Audio'), 
@@ -26,9 +26,12 @@ tmp_path =    {'audio' : Path('Comon','Tmp','Audio'),
                'video': Path('Comon','Tmp','Video')} 
 usr_root_path = Path('Users')
 usr_part_path = {'audio':'Audio','docs':'Docs','pix':'Pix','video':'Video'} 
-voice_path = Path('speech.ogg')
-voice_out_json = Path('audioout.json')
-syn_voice_path = Path('syn_voie.ogg')
+voice_path = Path('speech.ogg') #Временный файл голосового сообщения
+voice_out_json = Path('audioout.json') #Временный файл вывода голосового сообщения в виде структуры
+syn_voice_path = Path('syn_voie.ogg') 
+
+
+
 
 ocr = YandexOCR()
 voice = YaVoiceToText()
@@ -82,7 +85,15 @@ class ChatBot:
                                 types.InlineKeyboardButton(text='Для консоли хостинга', web_app=types.WebAppInfo('https://www.pythonanywhere.com/user/MasterWind007/')),
                                 types.InlineKeyboardButton(text='Перейти в чат 🪠', switch_inline_query="Telegram")]
                                }
-        
+    class UsersDialogs:
+        '''
+        Класс описывающий структуру пользовательских диалогов с Chat GPT4
+        Его назнаение хранить и выдавать  чату GPT4  последние 8 сообщений между
+        конкретным  пользователем и чатом
+        '''
+        def __init__(self) -> None:
+            usr_msg_sequence = {} # последовательность диалога польователя
+                
 
     class CommandArgs:  #класс для хранения параметров кнопки пример команды: /getpix photo.jpg 
         def __init__(self, cd='', cmd=''):
