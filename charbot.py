@@ -377,6 +377,15 @@ class ChatBot:
             if mess.startswith(i): 
                 need_voice = True 
         return need_voice               
+
+    def save_dlg(self, message) ->None:
+        add_en = True
+        for id in usrdlg.usr_msg_sequence:
+            if id == message.chat.id: add_en = False
+        if add_en: usrdlg.add_chat(message.chat.id)
+        usrdlg.add_msg(message.chat.id, message.text) # накопление сообщений в диалоге между пользователем и GPT чатом стобы он "помнил" нить диалога
+        return usrdlg.get_msg(message.chat.id)
+
 #-------------------------------------------------------------------------------------------
 #
 # 
@@ -389,13 +398,13 @@ class ChatBot:
 #
 #
     def text_or_voice(self, message)-> None: #По состонию need_voice(), определяет, отправлять сообщение текстом или голосом
-        usrdlg.add_chat(message.chat.id)
-        usrdlg.add_msg(message.chat.id, message.text) # накопление сообщений в диалоге между пользователем и GPT чатом стобы он "помнил" нить диалога
+        answer = gpt.answer(self.save_dlg(message)) #Самый главный метод для общения с GPT  чатом
         if self.need_voice(message.text):       
-            voice_raw = self.voice_from_text(gpt.answer(usrdlg.get_msg(message.chat.id)))
+            voice_raw = self.voice_from_text(answer)
             self.bot.send_voice(message.chat.id, voice_raw )
         else:
-            self.bot.send_message(message.chat.id, gpt.answer(usrdlg.get_msg(message.chat.id)))
+            self.bot.send_message(message.chat.id, answer)
+        usrdlg.add_msg(message.chat.id, answer)
 #---------------------------------------------------------------------------------------------    
     
     def gpt_err(self, message):
