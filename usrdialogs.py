@@ -1,7 +1,7 @@
 class UsersDialogs:
     '''
     Класс описывающий структуру пользовательских диалогов с Chat GPT4
-    Его назнаение хранить и выдавать  чату GPT4  последние self.max_msg (8) сообщений между
+    Его назначение хранить и выдавать чату GPT4  последние max_msg (8) сообщений между
     конкретным  пользователем и чатом
     '''
     def __init__(self, max_msg = 8) -> None:
@@ -43,15 +43,5 @@ class UsersDialogs:
         '''
         Удаляет сохраненный диалог пользователя
         '''
-        self.usr_msg_sequence[chat_id].clear()
-
-
-ud = UsersDialogs(max_msg = 8)
-ud.add_chat('111')
-ud.add_chat('111')
-ud.add_chat('111')
-ud.add_chat('111')
-for i in range(0,13):
-    ud.add_msg('111','Message' + str(i))
-
-print(ud.get_msg('111'))
+        self.usr_msg_sequence[chat_id].clear()  
+    #----------                 
