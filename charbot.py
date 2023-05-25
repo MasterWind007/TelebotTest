@@ -390,12 +390,12 @@ class ChatBot:
 #
     def text_or_voice(self, message)-> None: #По состонию need_voice(), определяет, отправлять сообщение текстом или голосом
         usrdlg.add_chat(message.chat.id)
-        usrdlg.add_msg(message.text) # накопление сообщений в диалоге между пользователем и GPT чатом стобы он "помнил" нить диалога
+        usrdlg.add_msg(message.chat.id, message.text) # накопление сообщений в диалоге между пользователем и GPT чатом стобы он "помнил" нить диалога
         if self.need_voice(message.text):       
-            voice_raw = self.voice_from_text(gpt.answer(usrdlg.get_msg))
+            voice_raw = self.voice_from_text(gpt.answer(usrdlg.get_msg(message.chat.id, message.text)))
             self.bot.send_voice(message.chat.id, voice_raw )
         else:
-            self.bot.send_message(message.chat.id, gpt.answer(usrdlg.get_msg))
+            self.bot.send_message(message.chat.id, gpt.answer(usrdlg.get_msg(message.chat.id, message.text)))
 #---------------------------------------------------------------------------------------------    
     
     def gpt_err(self, message):
