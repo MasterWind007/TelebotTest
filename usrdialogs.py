@@ -4,7 +4,7 @@ class UsersDialogs:
     Его назначение хранить и выдавать чату GPT4  последние max_msg (8) сообщений между
     конкретным  пользователем и чатом
     '''
-    def __init__(self, max_msg = 8) -> None:
+    def __init__(self, max_msg = 6) -> None:
         self.usr_msg_sequence = {} # последовательность диалога польователя
         self.max_msg = max_msg
     

@@ -43,7 +43,7 @@ gpt = GptChat() #Инициализация объекта работы с GPT4 
 gpt.get_key()
 barcode = BarCode() # Инициализация объекта для работы с штрих и QR кодами
 
-usrdlg = UsersDialogs() # История диалога между пользователем и GPT4
+usrdlg = UsersDialogs(max_msg = 6) # История диалога между пользователем и GPT4
 
 class ChatBot:
     def __init__(self, bt):
