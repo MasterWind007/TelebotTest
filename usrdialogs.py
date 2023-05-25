@@ -12,7 +12,7 @@ class UsersDialogs:
         '''
         Добавляет пустое хранилище истории диалогов для пользователя
         '''
-        self.usr_msg_sequence[chat_id] = ['']
+        self.usr_msg_sequence[chat_id] = []
 
     def add_msg(self, chat_id, msg) -> None:
         '''
