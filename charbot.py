@@ -400,8 +400,8 @@ class ChatBot:
 #
 #
     def text_or_voice(self, message)-> None: #По состонию need_voice(), определяет, отправлять сообщение текстом или голосом
+        answer = ""
         answer = gpt.answer(self.save_dlg(message)) #Самый главный метод для общения с GPT  чатом
-        print(len(answer))
         if self.need_voice(message.text):       
             voice_raw = self.voice_from_text(answer)
             self.bot.send_voice(message.chat.id, voice_raw )
@@ -409,9 +409,11 @@ class ChatBot:
             if len(answer) >= 4096:
                 for x in range(0, len(answer), 4095):
                     self.bot.send_message(message.chat.id, answer[x:x+4095])
+                    print(answer[x:x+4095])
                     time.sleep(1)  # import time
                 else:    
                     self.bot.send_message(message.chat.id, answer)
+                    print(answer)
             # self.bot.send_message(message.chat.id, answer)
         usrdlg.add_msg(message.chat.id, answer)
 #---------------------------------------------------------------------------------------------    
