@@ -406,7 +406,7 @@ class ChatBot:
             voice_raw = self.voice_from_text(answer)
             self.bot.send_voice(message.chat.id, voice_raw )
         else:
-            if len(answer) >= 4096:
+            if len(answer) > 4096:
                 for x in range(0, len(answer), 4096):
                     self.bot.send_message(message.chat.id, answer[x:x+4096])
                     print(answer[x:x+4096])
