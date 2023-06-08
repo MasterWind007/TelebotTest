@@ -50,5 +50,7 @@ class GptChat:
                                             temperature=self.temperature,
                                             max_tokens=self.max_tokens)
             return ansv.choices[0]['text']
-        except: return 'GptErr!'
+        except: 
+            print("Error GPT API!")
+            return 'GptErr!'
 
