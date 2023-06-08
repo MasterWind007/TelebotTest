@@ -400,7 +400,6 @@ class ChatBot:
 #
 #
     def text_or_voice(self, message)-> None: #По состонию need_voice(), определяет, отправлять сообщение текстом или голосом
-        answer = ""
         answer = gpt.answer(self.save_dlg(message)) #Самый главный метод для общения с GPT  чатом
         if self.need_voice(message.text):       
             voice_raw = self.voice_from_text(answer)
