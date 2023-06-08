@@ -378,7 +378,7 @@ class ChatBot:
                 need_voice = True 
         return need_voice               
 
-    def save_dlg(self, message) ->None:
+    def save_dlg(self, message) -> str:
         add_en = True
         for id in usrdlg.usr_msg_sequence:
             if id == message.chat.id: add_en = False
@@ -399,6 +399,7 @@ class ChatBot:
 #
     def text_or_voice(self, message)-> None: #По состонию need_voice(), определяет, отправлять сообщение текстом или голосом
         answer = gpt.answer(self.save_dlg(message)) #Самый главный метод для общения с GPT  чатом
+        print(len(answer))
         if self.need_voice(message.text):       
             voice_raw = self.voice_from_text(answer)
             self.bot.send_voice(message.chat.id, voice_raw )
