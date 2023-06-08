@@ -411,6 +411,7 @@ class ChatBot:
                     time.sleep(1)  # import time
             else:    
                 self.bot.send_message(message.chat.id, answer)
+            #self.bot.send_message(message.chat.id, answer)
         usrdlg.add_msg(message.chat.id, answer)
 #---------------------------------------------------------------------------------------------    
     
