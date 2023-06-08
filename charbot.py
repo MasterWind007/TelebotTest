@@ -409,12 +409,9 @@ class ChatBot:
             if len(answer) > 4096:
                 for x in range(0, len(answer), 4096):
                     self.bot.send_message(message.chat.id, answer[x:x+4096])
-                    print(answer[x:x+4096])
                     time.sleep(1)  # import time
             else:    
                 self.bot.send_message(message.chat.id, answer)
-                print(answer)
-            # self.bot.send_message(message.chat.id, answer)
         usrdlg.add_msg(message.chat.id, answer)
 #---------------------------------------------------------------------------------------------    
     
