@@ -407,9 +407,9 @@ class ChatBot:
             self.bot.send_voice(message.chat.id, voice_raw )
         else:
             if len(answer) >= 4096:
-                for x in range(0, len(answer), 4095):
-                    self.bot.send_message(message.chat.id, answer[x:x+4095])
-                    print(answer[x:x+4095])
+                for x in range(0, len(answer), 4096):
+                    self.bot.send_message(message.chat.id, answer[x:x+4096])
+                    print(answer[x:x+4096])
                     time.sleep(1)  # import time
                 else:    
                     self.bot.send_message(message.chat.id, answer)
