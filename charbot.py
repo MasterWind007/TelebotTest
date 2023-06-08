@@ -1,6 +1,7 @@
 import telebot as tb
 from telebot import types
 import random
+import time
 import ocrmodule
 from io import BytesIO
 import os
@@ -11,6 +12,7 @@ from yasprec import YaVoiceToText
 from yaspsyn import YaVoiceSyn
 from pathlib import Path
 from usrdialogs import  UsersDialogs
+
 
 
 ocr_exe_file = [Path('C:/','Program Files','Tesseract-OCR','tesseract.exe'),
@@ -404,12 +406,13 @@ class ChatBot:
             voice_raw = self.voice_from_text(answer)
             self.bot.send_voice(message.chat.id, voice_raw )
         else:
-            # if len(answer) > 4096:
-            #     for x in range(0, len(answer), 4096):
-            #         self.bot.send_message(message.chat.id, answer[x:x+4096])
-            #     else:    
-            #         self.bot.send_message(message.chat.id, answer)
-            self.bot.send_message(message.chat.id, answer)
+            if len(answer) >= 4096:
+                for x in range(0, len(answer), 4095):
+                    self.bot.send_message(message.chat.id, answer[x:x+4095])
+                    time.sleep(1)  # import time
+                else:    
+                    self.bot.send_message(message.chat.id, answer)
+            # self.bot.send_message(message.chat.id, answer)
         usrdlg.add_msg(message.chat.id, answer)
 #---------------------------------------------------------------------------------------------    
     
