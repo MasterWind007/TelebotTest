@@ -2,11 +2,10 @@ import openai
 from pathlib import Path
 
 class GptChat:
-    def __init__(self, key=''):
-        openai.api_key = key
+    def __init__(self):
         self.engine = "text-davinci-003"
         self.temperature = 0.8
-        self.max_tokens=1000
+        self.max_tokens=500
 
     def get_key(self, file = Path('Comon','Res','gpt_Key')):
         '''
@@ -46,10 +45,14 @@ class GptChat:
 
     def answer(self, ask):
         try:
+            text = ""
             ansv = openai.Completion.create(engine=self.engine, prompt=ask,
                                             temperature=self.temperature,
                                             max_tokens=self.max_tokens)
-            return ansv.choices[0]['text']
+            text =  ansv.choices[0]['text']
+            print(text)
+            return text
+        
         except: 
             print("Error GPT API!")
             return 'GptErr!'

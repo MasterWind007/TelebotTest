@@ -1,8 +1,8 @@
 import telebot as tb
 from telebot import types
 import random
-import time
-import ocrmodule
+# import time
+# import ocrmodule
 from io import BytesIO
 import os
 from barcode import BarCode
