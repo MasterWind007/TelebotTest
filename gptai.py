@@ -53,7 +53,7 @@ class GptChat:
             print(text)
             return text
         
-        except: 
-            print("Error GPT API!")
+        except Exception as e: 
+            print(e)
             return 'GptErr!'
 
